@@ -1,0 +1,113 @@
+<?php 
+$currentPath = uri_string();
+$isDashboard = strpos($currentPath, 'dashboard') !== false;
+$isNetwork = strpos($currentPath, 'directory') !== false || (strpos($currentPath, 'alumni/profile') !== false && $currentPath !== 'alumni/profile');
+
+$activeClass = 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400';
+$inactiveClass = 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors';
+
+$activeIcon = 'text-primary-500';
+$inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 dark:group-hover:text-slate-300';
+?>
+<!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
+<div x-show="sidebarOpen" class="fixed inset-0 flex z-40 md:hidden" x-cloak role="dialog" aria-modal="true">
+    <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-slate-600 bg-opacity-75" aria-hidden="true" @click="sidebarOpen = false"></div>
+
+    <div x-show="sidebarOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 pb-4 pt-5">
+        
+        <div class="absolute top-0 right-0 -mr-12 pt-2">
+            <button @click="sidebarOpen = false" type="button" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <span class="sr-only">Close sidebar</span>
+                <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <div class="flex-shrink-0 flex items-center px-4 gap-2">
+            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg">A</div>
+            <span class="text-xl font-bold text-slate-900 dark:text-white">AlumniNexus</span>
+        </div>
+        
+        <div class="mt-5 flex-1 h-0 overflow-y-auto">
+            <nav class="px-2 space-y-1">
+                <a href="<?= base_url('alumni/dashboard') ?>" class="<?= $isDashboard ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                    <!-- Home Icon -->
+                    <svg class="mr-4 flex-shrink-0 h-6 w-6 <?= $isDashboard ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                </a>
+                
+                <a href="<?= base_url('directory') ?>" class="<?= $isNetwork ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                    <!-- Users Icon -->
+                    <svg class="mr-4 flex-shrink-0 h-6 w-6 <?= $isNetwork ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    Network
+                </a>
+
+                <a href="#" class="<?= $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                    <!-- Academic Hat -->
+                    <svg class="mr-4 flex-shrink-0 h-6 w-6 <?= $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                    </svg>
+                    Sponsorships
+                </a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="flex-shrink-0 w-14" aria-hidden="true">
+        <!-- Dummy element to force sidebar to shrink to fit close icon -->
+    </div>
+</div>
+
+<!-- Static sidebar for desktop -->
+<div class="hidden md:flex md:flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-300">
+    <div class="flex flex-col w-64">
+        <!-- Sidebar component, swap this element with another sidebar if you like -->
+        <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center h-16 flex-shrink-0 px-4 border-b border-slate-100 dark:border-slate-800 gap-2">
+                <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg">A</div>
+                <span class="text-xl font-bold text-slate-900 dark:text-white">AlumniNexus</span>
+            </div>
+            
+            <div class="flex-1 flex flex-col overflow-y-auto">
+                <nav class="flex-1 px-3 py-4 space-y-1">
+                    <a href="<?= base_url('alumni/dashboard') ?>" class="<?= $isDashboard ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $isDashboard ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    
+                    <a href="<?= base_url('directory') ?>" class="<?= $isNetwork ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $isNetwork ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        Network
+                    </a>
+
+                    <a href="#" class="<?= $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
+                        Sponsorships
+                    </a>
+                </nav>
+                
+                <!-- Bottom Sidebar Element (e.g. Theme toggle or Help) -->
+                <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+                    <button @click="darkMode = !darkMode" class="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <svg x-show="!darkMode" class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg x-show="darkMode" class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
