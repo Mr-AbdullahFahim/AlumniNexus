@@ -1,4 +1,4 @@
-<div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
+<div class="sticky top-0 z-30 flex-shrink-0 flex h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
     <!-- Mobile hamburger -->
     <button @click="sidebarOpen = true" type="button" class="px-4 border-r border-slate-200 dark:border-slate-800 text-slate-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 md:hidden">
         <span class="sr-only">Open sidebar</span>
@@ -16,9 +16,6 @@
         
         <div class="ml-4 flex items-center md:ml-6 gap-3">
             
-            <!-- Notification Dropdown -->
-            <?= view('components/notification_dropdown') ?>
-
             <!-- Profile dropdown -->
             <?= view('components/profile_dropdown') ?>
             

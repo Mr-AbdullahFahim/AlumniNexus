@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/app') ?>
 <?= $this->section('content') ?>
 
+<div x-data="sponsorModule(<?= $user['id'] ?>)">
 <!-- Back Navigation -->
 <div class="mb-6">
     <a href="#" onclick="history.back(); return false;" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400">
@@ -63,9 +64,24 @@
             <!-- SPONSOR BUTTON -->
             <?php if(isset($viewer) && isset($viewer->role) && $viewer->role == 4): ?>
                 <div class="w-full mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <button class="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Sponsor Alumni
+                    <?php if (isset($hasReachedMonthlyWinLimit) && $hasReachedMonthlyWinLimit): ?>
+                        <div class="mb-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-800/30 text-center">
+                            <p class="text-xs font-medium text-red-700 dark:text-red-400">This alumni has reached the monthly winning quota and cannot receive further sponsorships this month.</p>
+                        </div>
+                        <button disabled class="w-full py-3 px-4 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold rounded-xl shadow-sm cursor-not-allowed flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Sponsor Alumni (Quota Reached)
+                        </button>
+                    <?php else: ?>
+                        <button @click="isSponsorModalOpen = true" class="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Sponsor Alumni
+                        </button>
+                    <?php endif; ?>
+                    
+                    <button @click="openHistoryModal" class="w-full mt-3 py-3 px-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        View Sponsorships
                     </button>
                 </div>
             <?php endif; ?>
@@ -268,5 +284,184 @@
         
     </div>
 </div>
+
+    <!-- Sponsor Modal -->
+    <div x-show="isSponsorModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="isSponsorModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-slate-900 bg-opacity-75 backdrop-blur-sm transition-opacity" @click="isSponsorModalOpen = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div x-show="isSponsorModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200 dark:border-slate-800">
+                <div class="bg-white dark:bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Sponsor <?= esc($user['name']) ?></h3>
+                        <button type="button" @click="isSponsorModalOpen = false" class="text-slate-400 hover:text-slate-500"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                    </div>
+                </div>
+                <div class="px-4 py-5 sm:p-6 text-slate-700 dark:text-slate-300">
+                    <div class="mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl border border-primary-100 dark:border-primary-800/30">
+                        <h4 class="text-sm font-bold text-primary-800 dark:text-primary-300 mb-2">Sponsorship Rules</h4>
+                        <ul class="text-xs text-primary-700 dark:text-primary-400 space-y-1 list-disc pl-4">
+                            <li>Minimum sponsorship amount is $1.00.</li>
+                            <li>Sponsorships are active immediately upon submission.</li>
+                            <li>You can sponsor the same alumni multiple times.</li>
+                        </ul>
+                    </div>
+
+                    <div x-show="errorMessage" class="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200" x-text="errorMessage"></div>
+
+                    <form @submit.prevent="submitSponsorship">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sponsorship Amount ($)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-500 sm:text-sm">$</span>
+                                </div>
+                                <input type="number" x-model="amount" step="0.01" min="1.00" class="pl-7 block w-full rounded-xl border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-slate-800 dark:border-slate-700 py-3" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <button type="submit" :disabled="isLoading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50">
+                                <span x-show="!isLoading">Submit Sponsorship</span>
+                                <span x-show="isLoading" class="flex items-center">
+                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Processing...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div x-show="isSuccessModalOpen" class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="isSuccessModalOpen" class="fixed inset-0 bg-slate-900 bg-opacity-75 backdrop-blur-sm transition-opacity" @click="isSuccessModalOpen = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div x-show="isSuccessModalOpen" class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-center overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full p-6 border border-slate-200 dark:border-slate-800">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Success!</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Your sponsorship has been successfully submitted.</p>
+                <button @click="isSuccessModalOpen = false" class="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-white py-2 rounded-xl font-bold transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div x-show="isHistoryModalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="isHistoryModalOpen" class="fixed inset-0 bg-slate-900 bg-opacity-75 backdrop-blur-sm transition-opacity" @click="isHistoryModalOpen = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div x-show="isHistoryModalOpen" class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-slate-200 dark:border-slate-800">
+                <div class="bg-white dark:bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Sponsorship History</h3>
+                        <button type="button" @click="isHistoryModalOpen = false" class="text-slate-400 hover:text-slate-500"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                    </div>
+                </div>
+                <div class="px-4 py-5 sm:p-6 text-slate-700 dark:text-slate-300">
+                    <div x-show="isHistoryLoading" class="text-center py-4">
+                        <svg class="animate-spin h-6 w-6 text-primary-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </div>
+                    
+                    <div x-show="!isHistoryLoading && history.length === 0" class="text-center py-6 text-slate-500 dark:text-slate-400">
+                        No sponsorships found for this alumni.
+                    </div>
+                    
+                    <div x-show="!isHistoryLoading && history.length > 0" class="space-y-4 max-h-60 overflow-y-auto pr-2">
+                        <template x-for="item in history" :key="item.id">
+                            <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white text-sm" x-text="item.sponsor_name"></h4>
+                                    <p class="text-xs text-slate-500 mt-1" x-text="item.display_date || new Date(item.created_at).toLocaleDateString()"></p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block font-black text-primary-600 dark:text-primary-400" x-text="'$' + item.amount"></span>
+                                    <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase mt-1" :class="item.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" x-text="item.status"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function sponsorModule(alumniId) {
+    return {
+        isSponsorModalOpen: false,
+        isSuccessModalOpen: false,
+        isHistoryModalOpen: false,
+        isLoading: false,
+        isHistoryLoading: false,
+        amount: '',
+        errorMessage: '',
+        history: [],
+        
+        async submitSponsorship() {
+            this.isLoading = true;
+            this.errorMessage = '';
+            
+            try {
+                // Determine base URL, works for both localhost and prod
+                const baseUrl = window.location.origin; 
+                
+                const response = await fetch(`${baseUrl}/api/alumni/sponsor`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        alumni_id: alumniId,
+                        amount: this.amount
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    this.isSponsorModalOpen = false;
+                    this.isSuccessModalOpen = true;
+                    this.amount = '';
+                } else {
+                    this.errorMessage = result.message || 'An error occurred. Please try again.';
+                }
+            } catch (error) {
+                this.errorMessage = 'Network error. Please try again.';
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        
+        async openHistoryModal() {
+            this.isHistoryModalOpen = true;
+            this.isHistoryLoading = true;
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/api/alumni/sponsor/history/${alumniId}`, {
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    this.history = result.data || [];
+                }
+            } catch (error) {
+                console.error('Failed to fetch history', error);
+            } finally {
+                this.isHistoryLoading = false;
+            }
+        }
+    }
+}
+</script>
 
 <?= $this->endSection() ?>
