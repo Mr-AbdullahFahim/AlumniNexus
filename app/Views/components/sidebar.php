@@ -8,6 +8,8 @@ $inactiveClass = 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:tex
 
 $activeIcon = 'text-primary-500';
 $inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 dark:group-hover:text-slate-300';
+
+$userRole = service('request')->user->role ?? null;
 ?>
 <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
 <div x-show="sidebarOpen" class="fixed inset-0 flex z-40 md:hidden" x-cloak role="dialog" aria-modal="true">
@@ -31,6 +33,15 @@ $inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 d
         
         <div class="mt-5 flex-1 h-0 overflow-y-auto">
             <nav class="px-2 space-y-1">
+                <?php if ($userRole == 4): ?>
+                <a href="<?= base_url('sponsor/dashboard') ?>" class="<?= $isDashboard ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                    <!-- Home Icon -->
+                    <svg class="mr-4 flex-shrink-0 h-6 w-6 <?= $isDashboard ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Sponsor Dashboard
+                </a>
+                <?php else: ?>
                 <a href="<?= base_url('alumni/dashboard') ?>" class="<?= $isDashboard ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
                     <!-- Home Icon -->
                     <svg class="mr-4 flex-shrink-0 h-6 w-6 <?= $isDashboard ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -38,6 +49,7 @@ $inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 d
                     </svg>
                     Dashboard
                 </a>
+                <?php endif; ?>
                 
                 <a href="<?= base_url('directory') ?>" class="<?= $isNetwork ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
                     <!-- Users Icon -->
@@ -47,14 +59,7 @@ $inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 d
                     Network
                 </a>
 
-                <a href="#" class="<?= $inactiveClass ?> group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                    <!-- Academic Hat -->
-                    <svg class="mr-4 flex-shrink-0 h-6 w-6 <?= $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M12 14l9-5-9-5-9 5 9 5z" />
-                        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                    </svg>
-                    Sponsorships
-                </a>
+
             </nav>
         </div>
     </div>
@@ -76,12 +81,21 @@ $inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 d
             
             <div class="flex-1 flex flex-col overflow-y-auto">
                 <nav class="flex-1 px-3 py-4 space-y-1">
+                    <?php if ($userRole == 4): ?>
+                    <a href="<?= base_url('sponsor/dashboard') ?>" class="<?= $isDashboard ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $isDashboard ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Sponsor Dashboard
+                    </a>
+                    <?php else: ?>
                     <a href="<?= base_url('alumni/dashboard') ?>" class="<?= $isDashboard ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $isDashboard ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         Dashboard
                     </a>
+                    <?php endif; ?>
                     
                     <a href="<?= base_url('directory') ?>" class="<?= $isNetwork ? $activeClass : $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $isNetwork ? $activeIcon : $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,13 +104,7 @@ $inactiveIcon = 'text-slate-400 group-hover:text-slate-500 dark:text-slate-500 d
                         Network
                     </a>
 
-                    <a href="#" class="<?= $inactiveClass ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-5 w-5 <?= $inactiveIcon ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
-                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                        </svg>
-                        Sponsorships
-                    </a>
+
                 </nav>
                 
                 <!-- Bottom Sidebar Element (e.g. Theme toggle or Help) -->

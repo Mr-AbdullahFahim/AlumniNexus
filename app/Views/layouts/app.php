@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Dashboard - AlumniNexus' ?></title>
     
+    <!-- Prevent Dark Mode Flash (FOUC) -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <!-- SPA-like Navigation without full page reloads -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
+
     <!-- Tailwind CSS (CDN for development) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -55,8 +65,8 @@
         <?= view('components/topbar') ?>
         
         <!-- Main Scrollable Area -->
-        <main class="flex-1 relative overflow-y-auto focus:outline-none">
-            <div class="py-6">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none flex flex-col">
+            <div class="py-6 flex-1">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                     
                     <!-- Dynamic View Content -->

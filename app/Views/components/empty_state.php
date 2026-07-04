@@ -1,5 +1,5 @@
 <?php
-$title = $title ?? 'No data available';
+$emptyTitle = $emptyTitle ?? 'No data available';
 $message = $message ?? 'There is currently no data to display in this section.';
 $icon = $icon ?? '<svg class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>';
 $actionText = $actionText ?? null;
@@ -8,7 +8,7 @@ $actionUrl = $actionUrl ?? '#';
 
 <div class="text-center py-16 px-4 sm:px-6 lg:px-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
     <?= $icon ?>
-    <h3 class="mt-4 text-sm font-semibold text-slate-900 dark:text-white"><?= esc($title) ?></h3>
+    <h3 class="mt-4 text-sm font-semibold text-slate-900 dark:text-white"><?= esc($emptyTitle) ?></h3>
     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400"><?= esc($message) ?></p>
     
     <?php if ($actionText): ?>

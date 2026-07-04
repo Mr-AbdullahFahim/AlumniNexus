@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Alumni Influencers Platform' ?></title>
     
+    <!-- Force full page reload when Turbo tries to navigate here -->
+    <meta name="turbo-visit-control" content="reload">
+
     <!-- Tailwind CSS (CDN for development) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

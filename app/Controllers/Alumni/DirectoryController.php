@@ -155,6 +155,7 @@ class DirectoryController extends BaseController
             'courses' => (new \App\Models\ProfessionalCourseModel())->where('user_id', $id)->findAll(),
             'projects' => (new \App\Models\ProjectModel())->where('user_id', $id)->findAll(),
             'achievements' => (new \App\Models\AchievementModel())->where('user_id', $id)->findAll(),
+            'hasReachedMonthlyWinLimit' => (new \App\Models\MonthlyWinningStatsModel())->hasReachedMonthlyLimit($id),
             'viewer' => $this->request->user ?? null,
             'breadcrumbs' => [
                 ['name' => 'Home', 'url' => base_url()],

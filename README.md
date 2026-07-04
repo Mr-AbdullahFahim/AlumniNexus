@@ -1,69 +1,172 @@
-# CodeIgniter 4 Application Starter
+# AlumniNexus
 
-## What is CodeIgniter?
+AlumniNexus is a premium networking platform built to bridge the gap between students, successful alumni, and corporate sponsors. It allows users to build profiles, connect with peers, and participate in a unique gamified sponsorship and bidding system to gain featured visibility.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## 🚀 Key Features
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+*   **Role-Based Access**: Specialized dashboards and functionalities for three distinct roles: Students, Alumni, and Corporate Sponsors.
+*   **Alumni Directory**: A searchable, filterable global directory of alumni.
+*   **Direct Sponsorships**: Corporate sponsors can directly fund alumni via virtual funds.
+*   **Gamified Bidding System**: Alumni use sponsorship funds to place blind bids in daily cycles. At the end of the day, the highest bidder wins the "Featured Alumni" spot.
+*   **JWT Authentication**: Secure stateless authentication using HttpOnly cookies and JSON Web Tokens.
+*   **Modern UI**: Built with Tailwind CSS and Alpine.js for a lightning-fast, highly interactive, and responsive user experience.
+*   **Hotwire Turbo Integration**: SPA-like instant page transitions without full page reloads.
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## 🛠️ Technology Stack
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+*   **Backend Framework**: CodeIgniter 4 (PHP 8.1+)
+*   **Database**: MySQL
+*   **Frontend Styling**: Tailwind CSS (CDN/CLI)
+*   **Frontend Interactivity**: Alpine.js
+*   **Authentication**: Firebase JWT (`firebase/php-jwt`)
 
-## Installation & updates
+---
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+## 💻 Local Development Setup
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+Follow these steps to get the project running on your local machine for development.
 
-## Setup
+### 1. Prerequisites
+Ensure you have the following installed:
+*   PHP 8.1 or newer (with `intl`, `mbstring`, `json`, `mysqlnd` extensions enabled)
+*   Composer
+*   MySQL Server (e.g., XAMPP, WAMP, or standalone)
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+### 2. Installation
+Clone the repository and install the PHP dependencies:
+```bash
+composer install
+```
 
-## Important Change with index.php
+### 3. Environment Configuration
+Open the `.env` file at the root of the project (if it doesn't exist, create it by copying `env` to `.env`). 
+Configure the following environment variables:
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+```ini
+# Environment
+CI_ENVIRONMENT = development
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+# Database Configuration
+database.default.hostname = localhost
+database.default.database = your_database_name
+database.default.username = your_database_user
+database.default.password = your_database_password
+database.default.DBDriver = MySQLi
 
-**Please** read the user guide for a better explanation of how CI4 works!
+# JWT Configuration
+JWT_SECRET_KEY = generate_a_very_long_random_string_here
+JWT_ALG = HS256
+JWT_TTL = 900
+```
 
-## Repository Management
+### 4. Database Migrations & Seeding
+Run the migrations to create the database tables, and run the seeders to populate the database with dummy data and test users:
+```bash
+php spark migrate
+php spark db:seed UserSeeder
+php spark db:seed DummyAlumniSeeder
+php spark db:seed BiddingTestSeeder
+```
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+### 5. Start the Development Server
+```bash
+php spark serve
+```
+The application will be accessible at `http://localhost:8080`.
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+---
 
-## Server Requirements
+## 🌍 Production Deployment Guide
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+Deploying AlumniNexus to a production server requires a few strict security and performance configurations.
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+### 1. Environment Configuration
+In your production `.env` file, ensure the following is set to disable debug tools and error display:
+```ini
+CI_ENVIRONMENT = production
+```
+**Critical:** Ensure your `JWT_SECRET_KEY` is completely unique, long, and securely generated.
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+### 2. Web Server Configuration
+The web server's document root MUST point to the `public/` directory inside the project, NOT the project root. This prevents public access to your backend application code, environment variables, and configuration files.
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+**Example Apache VirtualHost:**
+```apache
+<VirtualHost *:80>
+    ServerName alumninexus.com
+    DocumentRoot /var/www/alumninexus/public
+    
+    <Directory /var/www/alumninexus/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+### 3. Folder Permissions
+Ensure the web server (e.g., `www-data` or `apache`) has write access to the `writable/` directory. This is used for caching, logs, and sessions:
+```bash
+chmod -R 777 writable/
+```
+*(Note: Use more restrictive permissions like 755 or 775 depending on your specific server user/group setup).*
+
+---
+
+## ⏱️ Cron Job Configuration (Critical)
+
+The core feature of AlumniNexus is the daily Bidding Cycle. Alumni place bids throughout the day, and at **6:00 PM (18:00)**, the cycle closes, the system evaluates the highest bidder, deducts their sponsorship funds, and crowns them the "Featured Alumni".
+
+Because PHP is request-driven, this process **must** be triggered automatically by the server's task scheduler (Cron) every day.
+
+### Setting up the Cron Job (Linux/Ubuntu)
+We have written a custom CodeIgniter Spark Command (`bids:settle`) that handles all of this math and database updating safely.
+
+1. Open your server's crontab:
+```bash
+crontab -e
+```
+
+2. Add the following line to run the settlement script exactly at 18:00 (6 PM) every single day:
+```bash
+0 18 * * * cd /path/to/your/project && php spark bids:settle >> /path/to/your/project/writable/logs/cron.log 2>&1
+```
+
+*Replace `/path/to/your/project` with the actual absolute path to your AlumniNexus folder on the server.*
+
+**What this does:**
+* `0 18 * * *`: Runs at minute 0 past hour 18 (6:00 PM).
+* `cd /path... && php spark bids:settle`: Changes into the project directory and executes the CLI command.
+* `>> .../cron.log 2>&1`: Logs any output or errors to a log file inside your `writable` directory so you can debug if the settlement fails.
+
+*(If you are hosting on cPanel or a shared host, look for the "Cron Jobs" icon in your control panel and use the same command structure).*
+
+---
+
+## 🧪 Manual Testing in Development
+
+During development, you don't need to wait until 6:00 PM to test the core loop of the platform. You can simulate the entire process manually.
+
+### Step-by-Step Testing Loop:
+
+1. **Log In as a Corporate Sponsor**
+   - Use one of the sponsor accounts generated by the `UserSeeder`.
+   - Go to the **Alumni Directory**, find an alumni profile, and click **Sponsor**.
+   - Enter an amount (e.g., $100) and submit. This adds to the alumni's bidding power.
+
+2. **Log In as the Sponsored Alumni**
+   - Open an incognito window or log out, then log in using the sponsored Alumni's account.
+   - On the **Alumni Dashboard**, you will see your "Available Funds" have increased.
+   - Scroll down to the **Blind Bidding** section and submit a bid for the current cycle.
+
+3. **Trigger the Settlement Script Manually**
+   - Open your terminal/command prompt.
+   - Navigate to the root of your project.
+   - Run the settlement command manually:
+     ```bash
+     php spark bids:settle
+     ```
+   - *This forces the system to immediately close the current cycle, evaluate all bids, declare winners, deduct funds, and start the next cycle.*
+
+4. **Verify the Results**
+   - Refresh the Alumni Dashboard. You should see the cycle has shifted to the next day.
+   - Check the **Global Cycle History** modal to see the winner of the cycle you just forced to close!
