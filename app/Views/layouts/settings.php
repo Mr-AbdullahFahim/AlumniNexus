@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Dashboard - AlumniNexus' ?></title>
+    <title><?= $title ?? 'Settings - AlumniNexus' ?></title>
 
     <!-- SPA-like Navigation without full page reloads -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
@@ -48,8 +48,8 @@
 </head>
 <body class="h-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex overflow-hidden">
     
-    <!-- Sidebar Component -->
-    <?= view('components/sidebar') ?>
+    <!-- Settings Sidebar Component -->
+    <?= view('components/settings_sidebar') ?>
 
     <!-- Main Content Wrapper -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">

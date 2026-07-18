@@ -11,6 +11,7 @@ $routes->group('auth', ['namespace' => 'App\Controllers\Auth'], static function 
     $routes->get('register', 'AuthController::register');
     $routes->get('forgot-password', 'AuthController::forgotPassword');
     $routes->get('reset-password', 'AuthController::resetPassword');
+    $routes->get('verify-email', 'AuthController::verifyEmail');
 });
 
 // API Routes for Authentication
@@ -21,7 +22,7 @@ $routes->group('api/auth', ['namespace' => 'App\Controllers\Auth'], static funct
     $routes->post('refresh-token', 'LoginController::refreshToken');
     $routes->post('forgot-password', 'PasswordController::forgot');
     $routes->post('reset-password', 'PasswordController::reset');
-    $routes->get('verify-email/(:segment)', 'VerificationController::verify/$1');
+    $routes->post('verify-email', 'VerificationController::verify');
 });
 
 // Alumni Dashboard Routes (Requires JWT Auth in production, for now just standard routing)
@@ -131,4 +132,20 @@ $routes->group('api/student', ['filter' => ['jwt', 'role:3']], static function (
 $routes->group('api', ['filter' => 'jwt'], static function ($routes) {
     // Directory API
     $routes->get('directory', 'Alumni\DirectoryController::apiList');
+});
+
+// Settings Web Route
+$routes->get('settings', 'SettingsController::index', ['filter' => 'jwt']);
+
+// Settings API Routes
+$routes->group('api/settings', ['filter' => 'jwt'], static function ($routes) {
+    $routes->post('email/initiate', 'SettingsController::initiateEmailChange');
+    $routes->post('email/verify-current', 'SettingsController::verifyCurrentEmail');
+    $routes->post('email/initiate-new', 'SettingsController::initiateNewEmail');
+    $routes->post('email/verify-new', 'SettingsController::verifyNewEmail');
+    
+    $routes->post('password/initiate', 'SettingsController::initiatePasswordChange');
+    $routes->post('password/verify-otp', 'SettingsController::verifyPasswordOtp');
+    $routes->post('password', 'SettingsController::updatePassword');
+    $routes->delete('account', 'SettingsController::deleteAccount');
 });

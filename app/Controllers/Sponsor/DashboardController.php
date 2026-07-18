@@ -37,7 +37,9 @@ class DashboardController extends BaseController
         $db = \Config\Database::connect();
         $settingsQuery = $db->table('settings')->where('setting_key', 'next_cycle_end_time')->get();
         $nextEndTimeRow = $settingsQuery->getRow();
-        $nextEndTime = $nextEndTimeRow ? $nextEndTimeRow->setting_value : date('Y-m-d 18:00:00', strtotime('tomorrow'));
+        $hour = (int) date('H');
+        $fallbackTime = ($hour >= 18) ? date('Y-m-d 18:00:00', strtotime('+1 day')) : date('Y-m-d 18:00:00');
+        $nextEndTime = $nextEndTimeRow ? $nextEndTimeRow->setting_value : $fallbackTime;
 
         $data = [
             'cycles' => $cycles,

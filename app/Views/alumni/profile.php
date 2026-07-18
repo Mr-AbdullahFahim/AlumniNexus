@@ -299,11 +299,11 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company</label>
-                                        <input type="text" x-model="formData.general.company" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        <input type="text" x-model="formData.general.company" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500" placeholder="e.g. Google">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Position</label>
-                                        <input type="text" x-model="formData.general.position" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        <input type="text" x-model="formData.general.position" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500" placeholder="e.g. Software Engineer">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-3 gap-4">
@@ -322,7 +322,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bio</label>
-                                    <textarea x-model="formData.general.bio" rows="4" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500"></textarea>
+                                    <textarea x-model="formData.general.bio" rows="4" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500" placeholder="Tell us a little about yourself..."></textarea>
                                 </div>
                             </div>
                         </template>
@@ -381,11 +381,11 @@
                         <!-- Employment Fields -->
                         <template x-if="activeRelationType === 'employment'">
                             <div class="space-y-4">
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company</label><input type="text" x-model="formData.relation.company_name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Position</label><input type="text" x-model="formData.relation.position" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company</label><input type="text" x-model="formData.relation.company_name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. Microsoft"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Position</label><input type="text" x-model="formData.relation.position" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. Product Manager"></div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start Date</label><input type="date" x-model="formData.relation.start_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End Date</label><input type="date" x-model="formData.relation.end_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white disabled:opacity-50 disabled:bg-slate-200 dark:disabled:bg-slate-900 transition-colors" :disabled="!!formData.relation.is_current"></div>
+                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start Date</label><input type="date" x-model="formData.relation.start_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="YYYY-MM-DD"></div>
+                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End Date</label><input type="date" x-model="formData.relation.end_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white disabled:opacity-50 disabled:bg-slate-200 dark:disabled:bg-slate-900 transition-colors" :disabled="!!formData.relation.is_current" placeholder="YYYY-MM-DD"></div>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="is_current" x-model="formData.relation.is_current" class="rounded text-primary-600 focus:ring-primary-500">
@@ -397,11 +397,11 @@
                         <!-- Degree Fields -->
                         <template x-if="activeRelationType === 'degree'">
                             <div class="space-y-4">
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Institution</label><input type="text" x-model="formData.relation.institution" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Degree Name (e.g. B.Sc in Computer Science)</label><input type="text" x-model="formData.relation.degree_name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Institution</label><input type="text" x-model="formData.relation.institution" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. Stanford University"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Degree Name (e.g. B.Sc in Computer Science)</label><input type="text" x-model="formData.relation.degree_name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. B.Sc in Computer Science"></div>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start Date</label><input type="date" x-model="formData.relation.start_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End Date</label><input type="date" x-model="formData.relation.end_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
+                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start Date</label><input type="date" x-model="formData.relation.start_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="YYYY-MM-DD"></div>
+                                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End Date</label><input type="date" x-model="formData.relation.end_date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="YYYY-MM-DD"></div>
                                 </div>
                             </div>
                         </template>
@@ -409,26 +409,26 @@
                         <!-- Certification Fields -->
                         <template x-if="activeRelationType === 'certification'">
                             <div class="space-y-4">
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Certificate Name</label><input type="text" x-model="formData.relation.name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Issuing Organization</label><input type="text" x-model="formData.relation.issuing_organization" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Certificate Name</label><input type="text" x-model="formData.relation.name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. AWS Certified Solutions Architect"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Issuing Organization</label><input type="text" x-model="formData.relation.issuing_organization" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. Amazon Web Services"></div>
                             </div>
                         </template>
 
                         <!-- Project Fields -->
                         <template x-if="activeRelationType === 'project'">
                             <div class="space-y-4">
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project Title</label><input type="text" x-model="formData.relation.title" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label><textarea x-model="formData.relation.description" required rows="3" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></textarea></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project URL (Optional)</label><input type="url" x-model="formData.relation.link" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project Title</label><input type="text" x-model="formData.relation.title" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. E-Commerce Website"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label><textarea x-model="formData.relation.description" required rows="3" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="Provide a brief description..."></textarea></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project URL (Optional)</label><input type="url" x-model="formData.relation.link" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="https://example.com/project"></div>
                             </div>
                         </template>
 
                         <!-- Achievement Fields -->
                         <template x-if="activeRelationType === 'achievement'">
                             <div class="space-y-4">
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Achievement Title</label><input type="text" x-model="formData.relation.title" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date Earned (Optional)</label><input type="date" x-model="formData.relation.date_earned" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></div>
-                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description (Optional)</label><textarea x-model="formData.relation.description" rows="3" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white"></textarea></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Achievement Title</label><input type="text" x-model="formData.relation.title" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="e.g. E-Commerce Website"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date Earned (Optional)</label><input type="date" x-model="formData.relation.date_earned" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="YYYY-MM-DD"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description (Optional)</label><textarea x-model="formData.relation.description" rows="3" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white" placeholder="Provide a brief description..."></textarea></div>
                             </div>
                         </template>
 

@@ -8,24 +8,52 @@ use App\Models\EmailVerificationModel;
 
 class VerificationController extends ResourceController
 {
-    public function verify($token = null)
+    public function verify()
     {
-        if (!$token) {
-            return $this->failValidationError('Missing verification token.');
+        $rules = [
+            'email' => 'required|valid_email',
+            'otp'   => 'required|exact_length[6]|numeric'
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
         }
 
+        $email = $this->request->getVar('email');
+        $otp = $this->request->getVar('otp');
+
         $verifModel = new EmailVerificationModel();
-        $record = $verifModel->where('token', $token)->first();
+        $record = $verifModel->where('email', $email)->where('token', $otp)->first();
 
         if (!$record) {
-            return $this->failNotFound('Invalid verification token.');
+            return $this->failNotFound('Invalid OTP or Email.');
         }
 
         if (strtotime($record['expires_at']) < time()) {
-            return $this->failUnauthorized('Verification token has expired.');
+            return $this->failUnauthorized('OTP has expired.');
         }
 
         $userModel = new UserModel();
+
+        // If user_data exists, this is a new registration
+        if (!empty($record['user_data'])) {
+            $userData = json_decode($record['user_data'], true);
+            $userData['email_verified_at'] = date('Y-m-d H:i:s');
+            
+            // Just in case it was inserted somehow in between
+            if (!$userModel->where('email', $userData['email'])->first()) {
+                $userModel->insert($userData);
+            }
+            
+            $verifModel->delete($record['id']);
+
+            return $this->respond([
+                'status'  => 'success',
+                'message' => 'Email verified successfully. You can now log in.'
+            ]);
+        }
+
+        // Fallback for any other verifications (e.g., if previously inserted into users)
         $user = $userModel->where('email', $record['email'])->first();
 
         if ($user) {
@@ -45,10 +73,10 @@ class VerificationController extends ResourceController
 
             return $this->respond([
                 'status'  => 'success',
-                'message' => 'Email verified successfully. Awaiting admin approval to login.'
+                'message' => 'Email verified successfully. You can now log in.'
             ]);
         }
 
-        return $this->failServerError('User not found.');
+        return $this->failServerError('User not found or invalid request.');
     }
 }
