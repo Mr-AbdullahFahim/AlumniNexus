@@ -13,7 +13,7 @@ class EmailVerificationModel extends Model
     protected $useSoftDeletes   = false;
 
     protected $allowedFields    = [
-        'email', 'token', 'expires_at'
+        'email', 'token', 'user_data', 'expires_at'
     ];
 
     protected $useTimestamps = true;

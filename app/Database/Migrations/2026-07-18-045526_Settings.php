@@ -33,12 +33,13 @@ class Settings extends Migration
         // Seed initial values
         $db = \Config\Database::connect();
         
-        $currentCycle = date('Y-m-d');
-        // If it's already past 6 PM, theoretically the next end is tomorrow. But to keep it simple, we initialize it correctly based on our new logic.
-        $nextCycleEndTime = date('Y-m-d 18:00:00', strtotime('+1 day'));
-        if (date('H') >= 18) {
+        $hour = (int) date('H');
+        if ($hour >= 18) {
             $currentCycle = date('Y-m-d', strtotime('+1 day'));
-            $nextCycleEndTime = date('Y-m-d 18:00:00', strtotime('+2 days'));
+            $nextCycleEndTime = date('Y-m-d 18:00:00', strtotime('+1 day'));
+        } else {
+            $currentCycle = date('Y-m-d');
+            $nextCycleEndTime = date('Y-m-d 18:00:00');
         }
 
         $data = [

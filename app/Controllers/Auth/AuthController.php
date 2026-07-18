@@ -44,4 +44,10 @@ class AuthController extends BaseController
         if ($redirect = $this->redirectIfLoggedIn()) return $redirect;
         return view('auth/reset_password');
     }
+
+    public function verifyEmail()
+    {
+        if ($redirect = $this->redirectIfLoggedIn()) return $redirect;
+        return view('auth/verify_otp');
+    }
 }

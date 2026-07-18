@@ -38,7 +38,8 @@ class BlindBidModel extends Model
         }
 
         // Fallback
-        return date('Y-m-d');
+        $hour = (int) date('H');
+        return ($hour >= 18) ? date('Y-m-d', strtotime('+1 day')) : date('Y-m-d');
     }
 
     /**

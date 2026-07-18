@@ -53,7 +53,7 @@ if ($dbUser && $dbUser['role_id'] == 4) {
 }
 ?>
         <a href="<?= $profileUrl ?>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white transition-colors" role="menuitem" tabindex="-1">Your Profile</a>
-        <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white transition-colors" role="menuitem" tabindex="-1">Settings</a>
+        <a href="<?= base_url('settings') ?>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white transition-colors" role="menuitem" tabindex="-1">Settings</a>
         
         <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
         

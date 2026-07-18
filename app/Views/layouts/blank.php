@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="antialiased" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" :class="{ 'dark': darkMode }">
+<html lang="en" class="antialiased" x-data="{}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

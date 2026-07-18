@@ -36,8 +36,18 @@ class PasswordController extends ResourceController
                 'expires_at' => date('Y-m-d H:i:s', strtotime('+1 hour'))
             ]);
 
-            // In a real application, you would send an email here with a link like:
-            // base_url('/auth/reset-password?token=' . $token . '&email=' . urlencode($email))
+            $resetLink = base_url('auth/reset-password?token=' . $token . '&email=' . urlencode($email));
+            
+            $emailService = \Config\Services::email();
+            $emailService->setTo($email);
+            $emailService->setSubject('Reset Your Password - AlumniNexus');
+            
+            $message = view('emails/password_reset', [
+                'reset_link' => $resetLink
+            ]);
+            
+            $emailService->setMessage($message);
+            $emailService->send();
         }
 
         // Always return success even if email not found to prevent user enumeration

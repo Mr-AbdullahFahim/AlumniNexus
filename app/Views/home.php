@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="antialiased scroll-smooth" x-data="{ darkMode: false }">
+<html lang="en" class="antialiased scroll-smooth" x-data="{}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
