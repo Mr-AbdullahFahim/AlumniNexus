@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found - AlumniNexus</title>
     
+    <!-- Prevent Dark Mode Flash (FOUC) -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,9 +24,18 @@
             }
         }
     </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col justify-center items-center">
+
+    <!-- Escape Hatch for Turbo: Clear cache so back button works, then force hard reload -->
+    <script>
+        if (typeof window.Turbo !== 'undefined') {
+            window.Turbo.cache.clear();
+            window.location.reload();
+        }
+    </script>
 
     <div class="text-center px-4 sm:px-6 lg:px-8">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-6 shadow-sm">
@@ -43,6 +59,5 @@
             </a>
         </div>
     </div>
-
 </body>
 </html>

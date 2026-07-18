@@ -73,8 +73,27 @@
         </div>
     </nav>
 
+    <!-- Top Featured Alumni Banner -->
+    <div class="mt-20 sticky top-20 z-40">
+        <?php if ($isLoggedIn): ?>
+            <?= view_cell('\App\Cells\FeaturedAlumniCell::render', ['compact' => true]) ?>
+        <?php else: ?>
+            <div class="w-full bg-slate-900 border-b border-yellow-500/30">
+                <div class="w-full px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center shadow-lg">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <span class="text-slate-300 text-sm font-medium">Log in to discover today's <span class="text-yellow-400 font-bold tracking-wide">Featured Alumni</span></span>
+                    </div>
+                    <a href="<?= base_url('auth/login') ?>" class="group relative flex items-center justify-center px-4 py-1.5 text-xs font-bold text-slate-900 uppercase tracking-wider transition-all duration-200 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full hover:from-yellow-300 hover:to-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                        Log In Now
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex-1 flex flex-col justify-center">
+    <section class="relative pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden flex-1 flex flex-col justify-center">
         <!-- Background Blobs -->
         <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
         <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" style="animation-delay: 2s;"></div>
@@ -108,6 +127,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- How it Works Section -->
     <section id="how-it-works" class="py-24 bg-white relative border-y border-slate-100">

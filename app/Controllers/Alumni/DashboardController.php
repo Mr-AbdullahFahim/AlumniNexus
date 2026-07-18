@@ -123,16 +123,17 @@ class DashboardController extends BaseController
             ];
         }
 
+        $settingsQuery = $db->table('settings')->where('setting_key', 'next_cycle_end_time')->get();
+        $nextEndTimeRow = $settingsQuery->getRow();
+        $nextEndTime = $nextEndTimeRow ? $nextEndTimeRow->setting_value : date('Y-m-d 18:00:00', strtotime('tomorrow'));
+
         $data = [
             'alumni_id' => $alumniId,
-            'featured_alumni' => [
-                'is_featured' => $isFeatured,
-                'message' => "Congratulations! You are today's Featured Alumni."
-            ],
             'cycles' => $cycles,
             'remaining_wins' => $remainingWins,
             'quota_reached' => $winsCount >= 3,
-            'server_time' => date('c')
+            'server_time' => date('c'),
+            'next_cycle_end_time' => $nextEndTime
         ];
 
         return $this->respond($data);

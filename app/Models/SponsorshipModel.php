@@ -47,6 +47,29 @@ class SponsorshipModel extends Model
     }
 
     /**
+     * Get the total sponsorship amount for an alumni by a specific sponsor in a specific cycle.
+     *
+     * @param int $sponsorId
+     * @param int $alumniId
+     * @param string $cycleDate (Y-m-d)
+     * @return float
+     */
+    public function getSponsorTotalForCycle(int $sponsorId, int $alumniId, string $cycleDate): float
+    {
+        $startTime = date('Y-m-d 18:00:00', strtotime($cycleDate . ' -1 day'));
+        $endTime = date('Y-m-d 17:59:59', strtotime($cycleDate));
+
+        $result = $this->selectSum('amount')
+                       ->where('sponsor_id', $sponsorId)
+                       ->where('alumni_id', $alumniId)
+                       ->where('created_at >=', $startTime)
+                       ->where('created_at <=', $endTime)
+                       ->first();
+
+        return (float) ($result['amount'] ?? 0);
+    }
+
+    /**
      * Get the individual sponsorships for an alumni in a specific cycle.
      *
      * @param int $alumniId
@@ -120,7 +143,13 @@ class SponsorshipModel extends Model
             }
             
             $s['bid_status'] = $status;
-            $cycles[$cycleDate]['sponsorships'][] = $s;
+            
+            $alumniId = $s['alumni_id'];
+            if (!isset($cycles[$cycleDate]['sponsorships'][$alumniId])) {
+                $cycles[$cycleDate]['sponsorships'][$alumniId] = $s;
+            } else {
+                $cycles[$cycleDate]['sponsorships'][$alumniId]['amount'] += (float)$s['amount'];
+            }
             
             $amount = (float)$s['amount'];
             $cycles[$cycleDate]['total_amount'] += $amount;
@@ -135,6 +164,12 @@ class SponsorshipModel extends Model
         }
         
         krsort($cycles);
+        
+        // Reset the keys for the nested sponsorships arrays
+        foreach ($cycles as &$cycle) {
+            $cycle['sponsorships'] = array_values($cycle['sponsorships']);
+        }
+        
         return array_values($cycles);
     }
 

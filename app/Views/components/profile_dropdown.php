@@ -1,20 +1,30 @@
 <?php
 $dbUser = null;
+$profile = null;
 if (isset(service('request')->user->sub)) {
     $userModel = new \App\Models\UserModel();
     $dbUser = $userModel->find(service('request')->user->sub);
+    
+    $profileModel = new \App\Models\ProfileModel();
+    $profile = $profileModel->where('user_id', service('request')->user->sub)->first();
 }
 $userName = $dbUser ? esc($dbUser['name']) : 'User Name';
 $userEmail = $dbUser ? esc($dbUser['email']) : 'user@example.com';
 $initial = $dbUser ? strtoupper(substr($dbUser['name'], 0, 1)) : 'U';
+$photoUrl = ($profile && !empty($profile['photo_url'])) ? esc($profile['photo_url']) : null;
 ?>
 <div class="relative" x-data="{ open: false }" @click.away="open = false">
     <div>
         <button @click="open = !open" type="button" class="max-w-xs bg-white dark:bg-slate-900 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
             <span class="sr-only">Open user menu</span>
-            <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-primary-500 to-primary-600 text-white flex items-center justify-center font-bold shadow-md">
-                <?= $initial ?>
+            <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-primary-500 to-primary-600 text-white flex items-center justify-center font-bold shadow-md overflow-hidden">
+                <?php if ($photoUrl): ?>
+                    <img src="<?= $photoUrl ?>" alt="<?= $userName ?>" class="h-full w-full object-cover">
+                <?php else: ?>
+                    <?= $initial ?>
+                <?php endif; ?>
             </div>
+
         </button>
     </div>
 
@@ -34,7 +44,15 @@ $initial = $dbUser ? strtoupper(substr($dbUser['name'], 0, 1)) : 'U';
             <p class="text-xs text-slate-500 dark:text-slate-400 truncate"><?= $userEmail ?></p>
         </div>
 
-        <a href="<?= base_url('alumni/profile') ?>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white transition-colors" role="menuitem" tabindex="-1">Your Profile</a>
+<?php
+$profileUrl = base_url('alumni/profile'); // Default
+if ($dbUser && $dbUser['role_id'] == 4) {
+    $profileUrl = base_url('sponsor/profile');
+} elseif ($dbUser && $dbUser['role_id'] == 3) {
+    $profileUrl = base_url('student/profile');
+}
+?>
+        <a href="<?= $profileUrl ?>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white transition-colors" role="menuitem" tabindex="-1">Your Profile</a>
         <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white transition-colors" role="menuitem" tabindex="-1">Settings</a>
         
         <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
