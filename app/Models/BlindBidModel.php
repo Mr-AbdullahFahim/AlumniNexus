@@ -29,10 +29,15 @@ class BlindBidModel extends Model
      */
     public function getCurrentCycleDate(): string
     {
-        $currentHour = (int) date('H');
-        if ($currentHour >= 18) {
-            return date('Y-m-d', strtotime('+1 day'));
+        $db = \Config\Database::connect();
+        $query = $db->table('settings')->where('setting_key', 'current_cycle_date')->get();
+        $row = $query->getRow();
+        
+        if ($row) {
+            return $row->setting_value;
         }
+
+        // Fallback
         return date('Y-m-d');
     }
 

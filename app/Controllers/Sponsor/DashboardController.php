@@ -34,10 +34,16 @@ class DashboardController extends BaseController
         $cycles = $sponsorshipModel->getSponsorHistory($sponsorId);
         $currentCycleDate = $bidModel->getCurrentCycleDate();
 
+        $db = \Config\Database::connect();
+        $settingsQuery = $db->table('settings')->where('setting_key', 'next_cycle_end_time')->get();
+        $nextEndTimeRow = $settingsQuery->getRow();
+        $nextEndTime = $nextEndTimeRow ? $nextEndTimeRow->setting_value : date('Y-m-d 18:00:00', strtotime('tomorrow'));
+
         $data = [
             'cycles' => $cycles,
             'current_cycle_date' => $currentCycleDate,
-            'server_time' => date('c')
+            'server_time' => date('c'),
+            'next_cycle_end_time' => $nextEndTime
         ];
 
         return $this->respond($data);

@@ -84,7 +84,7 @@ function loginForm() {
                     // Redirect based on role ID
                     if (data.user && data.user.role == 1) redirectUrl = '<?= base_url('admin/dashboard') ?>';
                     if (data.user && data.user.role == 2) redirectUrl = '<?= base_url('alumni/dashboard') ?>';
-                    if (data.user && data.user.role == 3) redirectUrl = '<?= base_url('student/dashboard') ?>';
+                    if (data.user && data.user.role == 3) redirectUrl = '<?= base_url('student/favorites') ?>';
                     if (data.user && data.user.role == 4) redirectUrl = '<?= base_url('sponsor/dashboard') ?>';
 
                     setTimeout(() => window.location.href = redirectUrl, 1000);

@@ -1,7 +1,8 @@
 <?= $this->extend('layouts/app') ?>
 <?= $this->section('content') ?>
 
-<div x-data="sponsorModule(<?= $user['id'] ?>)">
+<div x-data="sponsorModule(<?= $user['id'] ?>, <?= $sponsorTotalThisCycle ?? 0 ?>)">
+<div x-data="favoriteModule(<?= $user['id'] ?>, <?= isset($isFavorited) && $isFavorited ? 'true' : 'false' ?>)">
 <!-- Back Navigation -->
 <div class="mb-6">
     <a href="#" onclick="history.back(); return false;" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400">
@@ -14,18 +15,44 @@
     
     <!-- Left Column: Profile Card -->
     <div class="lg:col-span-1 space-y-6">
+<?php $isFeaturedUser = isset($isFeatured) && $isFeatured; ?>
         <!-- Main Card -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center">
-            <img src="<?= !empty($general['photo_url']) ? esc($general['photo_url']) : 'https://ui-avatars.com/api/?name=' . urlencode($user['name']) . '&background=random' ?>" 
-                 class="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-sm mb-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center relative overflow-hidden <?= $isFeaturedUser ? 'ring-2 ring-yellow-400 dark:ring-yellow-500 shadow-yellow-500/20' : '' ?>">
             
-            <h1 class="text-2xl font-bold text-slate-900 dark:text-white"><?= esc($user['name']) ?></h1>
-            
-            <?php if(!empty($general['position']) && !empty($general['company'])): ?>
-                <p class="text-sm font-medium text-primary-600 dark:text-primary-400 mt-1"><?= esc($general['position']) ?> at <?= esc($general['company']) ?></p>
-            <?php elseif(!empty($general['position'])): ?>
-                <p class="text-sm font-medium text-primary-600 dark:text-primary-400 mt-1"><?= esc($general['position']) ?></p>
+            <?php if ($isFeaturedUser): ?>
+                <!-- Premium Background Elements -->
+                <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent z-0"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-400 opacity-20 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2"></div>
+                
+                <!-- Featured Badge -->
+                <div class="absolute top-4 left-4 z-10">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30">
+                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse"></span>
+                        Featured
+                    </span>
+                </div>
             <?php endif; ?>
+
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="relative inline-block mb-4">
+                    <img src="<?= !empty($general['photo_url']) ? esc($general['photo_url']) : 'https://ui-avatars.com/api/?name=' . urlencode($user['name']) . '&background=random' ?>" 
+                         class="w-32 h-32 rounded-full object-cover border-4 <?= $isFeaturedUser ? 'border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : 'border-white dark:border-slate-900 shadow-sm' ?> relative z-10">
+                    
+                    <?php if ($isFeaturedUser): ?>
+                        <div class="absolute -bottom-1 -right-1 z-20 bg-yellow-500 text-slate-900 p-1.5 rounded-full shadow-lg border-2 border-white dark:border-slate-900" title="Featured Alumni">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                
+                <h1 class="text-2xl font-bold <?= $isFeaturedUser ? 'text-yellow-600 dark:text-yellow-400' : 'text-slate-900 dark:text-white' ?>"><?= esc($user['name']) ?></h1>
+                
+                <?php if(!empty($general['position']) && !empty($general['company'])): ?>
+                    <p class="text-sm font-medium <?= $isFeaturedUser ? 'text-yellow-700 dark:text-yellow-500' : 'text-primary-600 dark:text-primary-400' ?> mt-1"><?= esc($general['position']) ?> at <?= esc($general['company']) ?></p>
+                <?php elseif(!empty($general['position'])): ?>
+                    <p class="text-sm font-medium <?= $isFeaturedUser ? 'text-yellow-700 dark:text-yellow-500' : 'text-primary-600 dark:text-primary-400' ?> mt-1"><?= esc($general['position']) ?></p>
+                <?php endif; ?>
+            </div>
 
             <div class="mt-6 w-full space-y-3">
                 <?php if(!empty($general['department'])): ?>
@@ -82,6 +109,16 @@
                     <button @click="openHistoryModal" class="w-full mt-3 py-3 px-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         View Sponsorships
+                    </button>
+                </div>
+            <?php endif; ?>
+
+            <!-- FAVORITE BUTTON FOR STUDENTS -->
+            <?php if(isset($viewer) && isset($viewer->role) && $viewer->role == 3): ?>
+                <div class="w-full mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <button @click="toggleFavorite" :class="isFavorited ? 'bg-yellow-50 text-yellow-600 border-yellow-200 hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-500 dark:border-yellow-800' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700'" class="w-full py-3 px-4 border text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2" :disabled="isLoading">
+                        <svg class="w-5 h-5 transition-transform" :class="isFavorited ? 'fill-current' : 'fill-none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                        <span x-text="isFavorited ? 'Favorited' : 'Add to Favorites'"></span>
                     </button>
                 </div>
             <?php endif; ?>
@@ -299,12 +336,33 @@
                 </div>
                 <div class="px-4 py-5 sm:p-6 text-slate-700 dark:text-slate-300">
                     <div class="mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl border border-primary-100 dark:border-primary-800/30">
-                        <h4 class="text-sm font-bold text-primary-800 dark:text-primary-300 mb-2">Sponsorship Rules</h4>
-                        <ul class="text-xs text-primary-700 dark:text-primary-400 space-y-1 list-disc pl-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-sm font-bold text-primary-800 dark:text-primary-300">Sponsorship Rules</h4>
+                            <?php if (isset($currentCycle)): ?>
+                                <span class="text-xs font-semibold px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-200 rounded-lg">Cycle: <?= date('M d, Y', strtotime($currentCycle)) ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <ul class="text-xs text-primary-700 dark:text-primary-400 space-y-1 list-disc pl-4 mb-3">
                             <li>Minimum sponsorship amount is $1.00.</li>
                             <li>Sponsorships are active immediately upon submission.</li>
                             <li>You can sponsor the same alumni multiple times.</li>
                         </ul>
+                        
+                            <div x-show="previousTotal > 0" x-cloak class="pt-3 border-t border-primary-200 dark:border-primary-800/50">
+                                <p class="text-sm font-medium text-primary-800 dark:text-primary-300 mb-2">
+                                    You have already sponsored <strong class="text-primary-600 dark:text-primary-400">$<span x-text="previousTotal.toFixed(2)"></span></strong> for this alumni in the current cycle.
+                                </p>
+                                <div class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-primary-200 dark:border-primary-700/50 shadow-sm">
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">New Total For This Cycle:</p>
+                                    <div class="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300">
+                                        <span>$<span x-text="previousTotal.toFixed(2)"></span> <span class="text-xs font-normal text-slate-400">(Previous)</span></span>
+                                        <span class="text-slate-400">+</span>
+                                        <span x-text="'$' + (parseFloat(amount) || 0).toFixed(2) + ' (New)'"></span>
+                                        <span class="text-slate-400">=</span>
+                                        <strong class="text-primary-600 dark:text-primary-400 text-base" x-text="'$' + newTotal.toFixed(2)"></strong>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
 
                     <div x-show="errorMessage" class="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200" x-text="errorMessage"></div>
@@ -390,10 +448,16 @@
         </div>
     </div>
 </div>
+</div>
 
 <script>
-function sponsorModule(alumniId) {
+function sponsorModule(alumniId, previousTotal) {
     return {
+        previousTotal: previousTotal || 0,
+        get newTotal() {
+            const currentAmount = parseFloat(this.amount) || 0;
+            return this.previousTotal + currentAmount;
+        },
         isSponsorModalOpen: false,
         isSuccessModalOpen: false,
         isHistoryModalOpen: false,
@@ -427,6 +491,7 @@ function sponsorModule(alumniId) {
                 const result = await response.json();
                 
                 if (response.ok) {
+                    this.previousTotal += parseFloat(this.amount) || 0;
                     this.isSponsorModalOpen = false;
                     this.isSuccessModalOpen = true;
                     this.amount = '';
@@ -458,6 +523,43 @@ function sponsorModule(alumniId) {
                 console.error('Failed to fetch history', error);
             } finally {
                 this.isHistoryLoading = false;
+            }
+        }
+    }
+}
+
+function favoriteModule(alumniId, initialStatus) {
+    return {
+        isFavorited: initialStatus,
+        isLoading: false,
+        
+        async toggleFavorite() {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/api/student/favorite/toggle`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        alumni_id: alumniId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    this.isFavorited = result.is_favorite;
+                }
+            } catch (error) {
+                console.error('Failed to toggle favorite', error);
+            } finally {
+                this.isLoading = false;
             }
         }
     }

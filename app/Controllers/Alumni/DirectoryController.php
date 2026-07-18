@@ -144,6 +144,29 @@ class DirectoryController extends BaseController
             }
         }
 
+        $currentCycle = (new \App\Models\BlindBidModel())->getCurrentCycleDate();
+        $sponsorTotalThisCycle = 0;
+        
+        if (isset($this->request->user) && $this->request->user->role == 4) {
+            $sponsorTotalThisCycle = (new \App\Models\SponsorshipModel())->getSponsorTotalForCycle($this->request->user->sub, $id, $currentCycle);
+        }
+
+        $isFavorited = false;
+        if (isset($this->request->user) && $this->request->user->role == 3) {
+            $favModel = new \App\Models\FavoriteProfileModel();
+            $existing = $favModel->where('student_id', $this->request->user->sub)
+                                 ->where('alumni_id', $id)
+                                 ->first();
+            if ($existing) {
+                $isFavorited = true;
+            }
+        }
+        
+        $featuredModel = new \App\Models\FeaturedAlumniModel();
+        $isFeatured = $featuredModel->where('alumni_id', $id)
+                                    ->where('featured_date', $currentCycle)
+                                    ->countAllResults() > 0;
+
         $data = [
             'title' => $user['name'] . ' - Profile',
             'user' => $user,
@@ -157,6 +180,10 @@ class DirectoryController extends BaseController
             'achievements' => (new \App\Models\AchievementModel())->where('user_id', $id)->findAll(),
             'hasReachedMonthlyWinLimit' => (new \App\Models\MonthlyWinningStatsModel())->hasReachedMonthlyLimit($id),
             'viewer' => $this->request->user ?? null,
+            'currentCycle' => $currentCycle,
+            'sponsorTotalThisCycle' => $sponsorTotalThisCycle,
+            'isFavorited' => $isFavorited,
+            'isFeatured' => $isFeatured,
             'breadcrumbs' => [
                 ['name' => 'Home', 'url' => base_url()],
                 ['name' => 'Alumni Directory', 'url' => base_url('alumni/directory')],

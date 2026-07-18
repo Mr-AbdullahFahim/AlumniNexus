@@ -13,22 +13,7 @@
         <button @click="fetchStats()" class="mt-2 text-sm font-semibold hover:underline">Try Again</button>
     </div>
 
-    <!-- Featured Banner Loaded -->
-    <div x-show="!isLoading && stats.featured_alumni?.is_featured" style="display: none;" 
-         class="mb-8 bg-gradient-to-r from-primary-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-        <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-        <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold tracking-tight">Today's Featured Alumni!</h2>
-                    <p class="text-primary-100 mt-1 text-sm sm:text-base" x-text="stats.featured_alumni?.message"></p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?= view_cell('\App\Cells\FeaturedAlumniCell::render') ?>
 
     <!-- Top Summary Grid -->
     
@@ -371,30 +356,26 @@ function alumniDashboard() {
             this.fetchStats();
         },
 
-        startCountdown(serverTimeString) {
+        startCountdown(nextEndTimeString, serverTimeString) {
             if (this.timer) clearInterval(this.timer);
             
             const serverNow = new Date(serverTimeString).getTime();
             const localNow = new Date().getTime();
             const timeDiff = serverNow - localNow;
 
+            const targetTime = new Date(nextEndTimeString).getTime();
+
             this.timer = setInterval(() => {
-                const now = new Date(new Date().getTime() + timeDiff);
+                const now = new Date(new Date().getTime() + timeDiff).getTime();
+                const diff = targetTime - now;
                 
-                let target = new Date(now);
-                target.setHours(18, 0, 0, 0);
-                
-                if (now > target) {
-                    target.setDate(target.getDate() + 1);
-                }
-                
-                const diff = target - now;
                 if (diff <= 0) {
                     this.countdown = '00:00:00';
+                    clearInterval(this.timer);
                     return;
                 }
                 
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 48); // Allow > 24 hours
                 const mins = Math.floor((diff / 1000 / 60) % 60);
                 const secs = Math.floor((diff / 1000) % 60);
                 
@@ -510,8 +491,8 @@ function alumniDashboard() {
                 }
                 
                 this.stats = await response.json();
-                if (this.stats.server_time) {
-                    this.startCountdown(this.stats.server_time);
+                if (this.stats.server_time && this.stats.next_cycle_end_time) {
+                    this.startCountdown(this.stats.next_cycle_end_time, this.stats.server_time);
                 }
             } catch (err) {
                 this.error = err.message;

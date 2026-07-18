@@ -13,6 +13,8 @@
         <button @click="fetchStats()" class="mt-2 text-sm font-semibold hover:underline">Try Again</button>
     </div>
 
+    <?= view_cell('\App\Cells\FeaturedAlumniCell::render') ?>
+
     <!-- Next Cycle Banner -->
     <div x-show="!isLoading" style="display: none;" class="mb-6 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
@@ -301,8 +303,8 @@ function sponsorDashboard() {
                 this.cycles = data.cycles || [];
                 this.currentCycleDate = data.current_cycle_date;
                 
-                if (data.server_time) {
-                    this.startCountdown(data.server_time);
+                if (data.server_time && data.next_cycle_end_time) {
+                    this.startCountdown(data.next_cycle_end_time, data.server_time);
                 }
             } catch (err) {
                 this.error = err.message;
@@ -311,30 +313,26 @@ function sponsorDashboard() {
             }
         },
 
-        startCountdown(serverTimeString) {
+        startCountdown(nextEndTimeString, serverTimeString) {
             if (this.timer) clearInterval(this.timer);
             
             const serverNow = new Date(serverTimeString).getTime();
             const localNow = new Date().getTime();
             const timeDiff = serverNow - localNow;
+            
+            const targetTime = new Date(nextEndTimeString).getTime();
 
             this.timer = setInterval(() => {
-                const now = new Date(new Date().getTime() + timeDiff);
+                const now = new Date(new Date().getTime() + timeDiff).getTime();
+                const diff = targetTime - now;
                 
-                let target = new Date(now);
-                target.setHours(18, 0, 0, 0);
-                
-                if (now > target) {
-                    target.setDate(target.getDate() + 1);
-                }
-                
-                const diff = target - now;
                 if (diff <= 0) {
                     this.countdown = '00:00:00';
+                    clearInterval(this.timer);
                     return;
                 }
                 
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 48);
                 const mins = Math.floor((diff / 1000 / 60) % 60);
                 const secs = Math.floor((diff / 1000) % 60);
                 

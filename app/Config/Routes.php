@@ -79,11 +79,53 @@ $routes->get('api/alumni/sponsor/history/(:num)', 'Alumni\SponsorController::his
 // Sponsor Routes
 $routes->group('sponsor', ['namespace' => 'App\Controllers\Sponsor', 'filter' => ['jwt', 'role:4']], static function ($routes) {
     $routes->get('dashboard', 'DashboardController::index');
+    $routes->get('profile', 'ProfileController::index');
 });
 
 $routes->group('api/sponsor', ['namespace' => 'App\Controllers\Sponsor', 'filter' => ['jwt', 'role:4']], static function ($routes) {
     $routes->get('dashboard/stats', 'DashboardController::getStats');
     $routes->get('dashboard/history', 'DashboardController::getGlobalHistory');
+    
+    // Profile APIs
+    $routes->get('profile/data', 'ProfileController::getData');
+    $routes->post('profile/general', 'ProfileController::updateGeneral');
+    $routes->post('profile/upload-photo', 'ProfileController::uploadPhoto');
+});
+
+// Student Routes
+$routes->group('student', ['namespace' => 'App\Controllers\Student', 'filter' => ['jwt', 'role:3']], static function ($routes) {
+    $routes->get('favorites', 'FavoriteController::index');
+    $routes->get('profile', 'ProfileController::index');
+});
+
+$routes->group('api/student', ['filter' => ['jwt', 'role:3']], static function ($routes) {
+    // Favorites API
+    $routes->get('favorite/list', '\App\Controllers\Student\FavoriteController::list');
+    $routes->post('favorite/toggle', '\App\Controllers\Student\FavoriteController::toggle');
+    
+    // Profile APIs - reusing Alumni ProfileController logic
+    $routes->get('profile/data', '\App\Controllers\Alumni\ProfileController::getData');
+    $routes->post('profile/general', '\App\Controllers\Alumni\ProfileController::updateGeneral');
+    $routes->post('profile/upload-photo', '\App\Controllers\Alumni\ProfileController::uploadPhoto');
+    
+    $routes->post('profile/degree', '\App\Controllers\Alumni\ProfileController::saveDegree');
+    $routes->delete('profile/degree/(:num)', '\App\Controllers\Alumni\ProfileController::deleteDegree/$1');
+    
+    $routes->post('profile/employment', '\App\Controllers\Alumni\ProfileController::saveEmployment');
+    $routes->delete('profile/employment/(:num)', '\App\Controllers\Alumni\ProfileController::deleteEmployment/$1');
+    
+    $routes->post('profile/certification', '\App\Controllers\Alumni\ProfileController::saveCertification');
+    $routes->delete('profile/certification/(:num)', '\App\Controllers\Alumni\ProfileController::deleteCertification/$1');
+    
+    $routes->post('profile/licence', '\App\Controllers\Alumni\ProfileController::saveLicence');
+    $routes->delete('profile/licence/(:num)', '\App\Controllers\Alumni\ProfileController::deleteLicence/$1');
+    
+    $routes->post('profile/course', '\App\Controllers\Alumni\ProfileController::saveCourse');
+    $routes->delete('profile/course/(:num)', '\App\Controllers\Alumni\ProfileController::deleteCourse/$1');
+    $routes->post('profile/project', '\App\Controllers\Alumni\ProfileController::saveProject');
+    $routes->delete('profile/project/(:num)', '\App\Controllers\Alumni\ProfileController::deleteProject/$1');
+    $routes->post('profile/achievement', '\App\Controllers\Alumni\ProfileController::saveAchievement');
+    $routes->delete('profile/achievement/(:num)', '\App\Controllers\Alumni\ProfileController::deleteAchievement/$1');
 });
 
 $routes->group('api', ['filter' => 'jwt'], static function ($routes) {
