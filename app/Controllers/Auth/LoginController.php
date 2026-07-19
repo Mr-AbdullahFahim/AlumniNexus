@@ -12,6 +12,7 @@ class LoginController extends ResourceController
 {
     public function index()
     {
+        helper('audit');
         $rules = [
             'email'    => 'required|valid_email',
             'password' => 'required'
@@ -54,6 +55,9 @@ class LoginController extends ResourceController
             'token'      => $refreshToken,
             'expires_at' => date('Y-m-d H:i:s', strtotime($rememberMe ? '+30 days' : '+1 day'))
         ]);
+
+        // Log Activity
+        log_activity('User Login', null, null, null, null, $user['id']);
 
         // Set HttpOnly Cookie for JWT
         $cookie = new Cookie(

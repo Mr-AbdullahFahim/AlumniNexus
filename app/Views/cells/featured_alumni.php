@@ -1,5 +1,5 @@
 <?php if ($compact ?? false): ?>
-<div class="w-full relative overflow-hidden bg-slate-900 border-b border-yellow-500/30">
+<div class="w-full relative overflow-hidden bg-slate-900 border-b border-yellow-500/30 <?= ($rounded ?? false) ? 'rounded-xl shadow-md border-x border-t' : '' ?>">
     <!-- Premium background effects -->
     <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-transparent to-yellow-500/5 z-0"></div>
     <div class="absolute right-0 top-0 w-64 h-full bg-yellow-400 opacity-10 rounded-full blur-3xl transform translate-x-1/2"></div>

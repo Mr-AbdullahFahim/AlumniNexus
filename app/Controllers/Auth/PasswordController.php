@@ -62,7 +62,7 @@ class PasswordController extends ResourceController
         $rules = [
             'email'            => 'required|valid_email',
             'token'            => 'required',
-            'password'         => 'required|min_length[8]',
+            'password'         => 'required|min_length[8]|strong_password',
             'confirm_password' => 'required|matches[password]'
         ];
 
@@ -86,7 +86,7 @@ class PasswordController extends ResourceController
 
         if ($user) {
             $userModel->update($user['id'], [
-                'password_hash' => password_hash($password, PASSWORD_BCRYPT)
+                'password_hash' => password_hash($password, PASSWORD_BCRYPT, ['cost' => 12])
             ]);
             
             // Delete the token

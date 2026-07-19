@@ -10,6 +10,7 @@ class VerificationController extends ResourceController
 {
     public function verify()
     {
+        helper('audit');
         $rules = [
             'email' => 'required|valid_email',
             'otp'   => 'required|exact_length[6]|numeric'
@@ -43,6 +44,8 @@ class VerificationController extends ResourceController
             // Just in case it was inserted somehow in between
             if (!$userModel->where('email', $userData['email'])->first()) {
                 $userModel->insert($userData);
+                $newUserId = $userModel->getInsertID();
+                log_activity('User Registered', 'users', $newUserId, null, null, $newUserId);
             }
             
             $verifModel->delete($record['id']);

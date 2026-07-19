@@ -7,6 +7,7 @@
 
     <!-- SPA-like Navigation without full page reloads -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
+    <?= csrf_meta() ?>
 
     <!-- Tailwind CSS (CDN for development) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,6 +38,34 @@
     
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- CSRF global fetch interceptor -->
+    <script>
+        const originalFetch = window.fetch;
+        window.fetch = async function() {
+            let [resource, config] = arguments;
+            if (!config) config = {};
+            
+            if (config.method && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method.toUpperCase())) {
+                const match = document.cookie.match(new RegExp('(^| )csrf_cookie_name=([^;]+)'));
+                let token = match ? match[2] : null;
+                if (!token) {
+                    const meta = document.querySelector('meta[name="X-CSRF-TOKEN"]');
+                    if (meta) token = meta.getAttribute('content');
+                }
+                if (token) {
+                    config.headers = {
+                        ...config.headers,
+                        'X-CSRF-TOKEN': token
+                    };
+                }
+            }
+            return originalFetch(resource, config);
+        };
+    </script>
     
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

@@ -72,6 +72,8 @@ class ProfileController extends BaseController
         
         $profileModel->update($profile['id'], $data);
         
+        log_activity('Updated General Profile', 'profiles', $profile['id'], $profile, $data, $userId);
+        
         return $this->respond(['status' => 'success', 'message' => 'Profile updated successfully']);
     }
 
@@ -128,8 +130,8 @@ class ProfileController extends BaseController
             $data['is_current'] = $data['is_current'] ? 1 : 0;
         }
 
-        foreach (['start_date', 'end_date'] as $dateField) {
-            if (isset($data[$dateField]) && trim($data[$dateField]) === '') {
+        foreach (['start_date', 'end_date', 'date_earned', 'issue_date', 'expiration_date'] as $dateField) {
+            if (array_key_exists($dateField, $data) && trim((string)$data[$dateField]) === '') {
                 $data[$dateField] = null;
             }
         }
@@ -141,14 +143,22 @@ class ProfileController extends BaseController
             // Update
             $record = $model->find($data['id']);
             if (!$record || $record['user_id'] != $userId) return $this->failForbidden();
-            $model->update($data['id'], $data);
+            
+            $updated = $model->update($data['id'], $data);
+            if ($updated === false) {
+                 if ($model->errors()) return $this->failValidationErrors($model->errors());
+                 return $this->failServerError('Failed to update record. Check required fields.');
+            }
+            log_activity("Updated Profile Section: {$modelName}", strtolower(str_replace('Model', '', $modelName)), $data['id'], $record, $data, $userId);
         } else {
             // Create
-            $model->insert($data);
-        }
-
-        if ($model->errors()) {
-            return $this->failValidationErrors($model->errors());
+            $inserted = $model->insert($data);
+            if ($inserted === false) {
+                 if ($model->errors()) return $this->failValidationErrors($model->errors());
+                 return $this->failServerError('Failed to create record. Check required fields.');
+            }
+            $newId = $model->getInsertID();
+            log_activity("Added Profile Section: {$modelName}", strtolower(str_replace('Model', '', $modelName)), $newId, null, $data, $userId);
         }
 
         return $this->respond(['status' => 'success', 'message' => 'Saved successfully']);
@@ -164,6 +174,8 @@ class ProfileController extends BaseController
         if (!$record || $record['user_id'] != $userId) return $this->failForbidden();
         
         $model->delete($id);
+        log_activity("Deleted Profile Section: {$modelName}", strtolower(str_replace('Model', '', $modelName)), $id, $record, null, $userId);
+        
         return $this->respondDeleted(['status' => 'success', 'message' => 'Deleted successfully']);
     }
 

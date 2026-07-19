@@ -42,22 +42,23 @@ class DashboardController extends BaseController
         // 2. Build Cycles List
         $cycles = [];
         
-        // Current Active Cycle
-        $currentBid = $bidModel->where('alumni_id', $alumniId)->where('bid_date', $cycleDate)->first();
-        $currentSponsorships = $sponsorshipModel->getSponsorshipsForCycle($alumniId, $cycleDate);
-        $currentTotal = array_sum(array_column($currentSponsorships, 'amount'));
-        
-        $cycles[] = [
-            'id' => 'current',
-            'date' => date('M d, Y', strtotime($cycleDate)),
-            'raw_date' => $cycleDate,
-            'is_active' => true,
-            'status' => $currentBid ? $currentBid['status'] : 'pending',
-            'bid_amount' => $currentBid ? (float)$currentBid['bid_amount'] : 0,
-            'total_sponsorships' => $currentTotal,
-            'sponsors' => $currentSponsorships,
-            'remaining_winnings' => 0
-        ];
+        if ($cycleDate) {
+            $currentBid = $bidModel->where('alumni_id', $alumniId)->where('bid_date', $cycleDate)->first();
+            $currentSponsorships = $sponsorshipModel->getSponsorshipsForCycle($alumniId, $cycleDate);
+            $currentTotal = array_sum(array_column($currentSponsorships, 'amount'));
+            
+            $cycles[] = [
+                'id' => 'current',
+                'date' => date('M d, Y', strtotime($cycleDate)),
+                'raw_date' => $cycleDate,
+                'is_active' => true,
+                'status' => $currentBid ? $currentBid['status'] : 'pending',
+                'bid_amount' => $currentBid ? (float)$currentBid['bid_amount'] : 0,
+                'total_sponsorships' => $currentTotal,
+                'sponsors' => $currentSponsorships,
+                'remaining_winnings' => 0
+            ];
+        }
 
         // 3. Remaining Wins
         $currentYear = (int) date('Y');
@@ -80,7 +81,7 @@ class DashboardController extends BaseController
                    ->getResultArray();
         
         $sponsorships = $db->table('sponsorships')
-                           ->select('created_at')
+                           ->select('cycle_date')
                            ->where('alumni_id', $alumniId)
                            ->get()
                            ->getResultArray();
@@ -90,10 +91,8 @@ class DashboardController extends BaseController
             $historicalDates[] = $b['bid_date'];
         }
         foreach ($sponsorships as $s) {
-            $createdAt = strtotime($s['created_at']);
-            $hour = (int) date('H', $createdAt);
-            $cDate = ($hour >= 18) ? date('Y-m-d', strtotime('+1 day', $createdAt)) : date('Y-m-d', $createdAt);
-            if ($cDate !== $cycleDate) {
+            $cDate = $s['cycle_date'];
+            if ($cDate && $cDate !== $cycleDate) {
                 $historicalDates[] = $cDate;
             }
         }
@@ -125,9 +124,16 @@ class DashboardController extends BaseController
 
         $settingsQuery = $db->table('settings')->where('setting_key', 'next_cycle_end_time')->get();
         $nextEndTimeRow = $settingsQuery->getRow();
-        $hour = (int) date('H');
-        $fallbackTime = ($hour >= 18) ? date('Y-m-d 18:00:00', strtotime('+1 day')) : date('Y-m-d 18:00:00');
-        $nextEndTime = $nextEndTimeRow ? $nextEndTimeRow->setting_value : $fallbackTime;
+        $nextEndTime = $nextEndTimeRow ? $nextEndTimeRow->setting_value : null;
+        
+        if (!$nextEndTime) {
+            $hour = (int) date('H');
+            if ($hour >= 18) {
+                $nextEndTime = date('Y-m-d 18:00:00', strtotime('+1 day'));
+            } else {
+                $nextEndTime = date('Y-m-d 18:00:00');
+            }
+        }
 
         $data = [
             'alumni_id' => $alumniId,
@@ -135,7 +141,7 @@ class DashboardController extends BaseController
             'remaining_wins' => $remainingWins,
             'quota_reached' => $winsCount >= 3,
             'server_time' => date('c'),
-            'next_cycle_end_time' => $nextEndTime
+            'next_cycle_end_time' => $nextEndTime ? date('c', strtotime($nextEndTime)) : null
         ];
 
         return $this->respond($data);

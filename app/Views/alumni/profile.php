@@ -357,7 +357,13 @@
 
                         <div class="pt-4 flex justify-end gap-3">
                             <button type="button" @click="modals.general = false" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50">Cancel</button>
-                            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700">Save Changes</button>
+                            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 flex items-center justify-center min-w-[130px]" :disabled="loading">
+                                <span x-show="!loading">Save Changes</span>
+                                <svg x-show="loading" class="animate-spin h-5 w-5 text-white" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -434,7 +440,13 @@
 
                         <div class="pt-4 flex justify-end gap-3">
                             <button type="button" @click="modals.relation = false" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50">Cancel</button>
-                            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700">Save</button>
+                            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 flex items-center justify-center min-w-[100px]" :disabled="loading">
+                                <span x-show="!loading">Save</span>
+                                <svg x-show="loading" class="animate-spin h-5 w-5 text-white" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -458,7 +470,13 @@
                     </div>
                     <div class="pt-4 flex justify-end gap-3">
                         <button type="button" @click="modals.crop = false" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50">Cancel</button>
-                        <button type="button" @click="uploadCroppedPhoto" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700">Apply & Upload</button>
+                        <button type="button" @click="uploadCroppedPhoto" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 flex items-center justify-center min-w-[140px]" :disabled="loading">
+                            <span x-show="!loading">Apply & Upload</span>
+                            <svg x-show="loading" class="animate-spin h-5 w-5 text-white" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -505,7 +523,7 @@ function alumniProfile() {
 
         async initData() {
             try {
-                const res = await fetch('<?= base_url('api/alumni/profile/data') ?>');
+                const res = await fetch(`<?= base_url('api/alumni/profile/data') ?>?_t=${new Date().getTime()}`);
                 if (!res.ok) throw new Error('Failed to load profile');
                 const data = await res.json();
                 

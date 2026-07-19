@@ -32,6 +32,47 @@
         </div>
     </div>
 
+    <!-- Current Active Cycle Section -->
+    <div x-show="!isLoading && currentCycleDate" style="display: none;" class="mb-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30 overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-emerald-50/50 dark:bg-emerald-900/10">
+            <div>
+                <h3 class="text-lg font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Current Ongoing Cycle
+                </h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1" x-text="new Date(currentCycleDate).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})"></p>
+            </div>
+            <a href="<?= base_url('directory') ?>" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Sponsor Alumni
+            </a>
+        </div>
+        <div class="p-6">
+            <template x-if="getCurrentCycleData()">
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wider">Your Sponsorships Today</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <template x-for="(sp, idx) in getCurrentCycleData().sponsorships" :key="idx">
+                            <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                                <a :href="'<?= base_url('alumni/profile/') ?>' + sp.alumni_id" class="flex items-center gap-3 group">
+                                    <img :src="sp.photo_url ? (sp.photo_url.startsWith('http') ? sp.photo_url : '<?= base_url() ?>' + sp.photo_url) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(sp.alumni_name) + '&background=random'" alt="Profile" class="w-10 h-10 rounded-full object-cover group-hover:opacity-75 transition-opacity">
+                                    <span class="font-semibold text-slate-900 dark:text-white group-hover:opacity-75 transition-opacity" x-text="sp.alumni_name"></span>
+                                </a>
+                                <span class="text-emerald-600 dark:text-emerald-400 font-bold" x-text="'+$' + parseFloat(sp.amount).toFixed(2)"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <template x-if="!getCurrentCycleData()">
+                <div class="text-center py-6 text-slate-500 dark:text-slate-400">
+                    <svg class="mx-auto h-12 w-12 text-slate-300 dark:text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p>You haven't sponsored anyone in the current cycle yet.</p>
+                </div>
+            </template>
+        </div>
+    </div>
+
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Your Sponsorship History</h2>
@@ -273,6 +314,12 @@ function sponsorDashboard() {
         globalHistory: [],
         isHistoryLoading: false,
         expandedHistoryCycle: null,
+        
+        getCurrentCycleData() {
+            if (!this.currentCycleDate || !this.cycles.length) return null;
+            const current = this.cycles.find(c => c.cycle_date === this.currentCycleDate);
+            return current || null;
+        },
 
         openCycleModal(cycle) {
             this.selectedCycle = cycle;
@@ -332,7 +379,7 @@ function sponsorDashboard() {
                     return;
                 }
                 
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 48);
+                const hours = Math.floor((diff / (1000 * 60 * 60)));
                 const mins = Math.floor((diff / 1000 / 60) % 60);
                 const secs = Math.floor((diff / 1000) % 60);
                 

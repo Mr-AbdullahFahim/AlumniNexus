@@ -9,6 +9,37 @@
         <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Manage your email address, password, and account deletion.</p>
     </div>
 
+    <!-- Profile Photo Section (Admin Only) -->
+    <?php if ($user['role_id'] == 1): ?>
+    <div class="bg-white dark:bg-slate-800 shadow rounded-lg mb-8 overflow-hidden" x-data="profilePhotoSettings()">
+        <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-medium text-slate-900 dark:text-white">Profile Photo</h3>
+        </div>
+        <div class="p-6">
+            <div class="flex items-center space-x-6">
+                <div class="relative w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden shadow-md flex items-center justify-center">
+                    <template x-if="photoUrl">
+                        <img :src="photoUrl" class="w-full h-full object-cover" alt="Profile Photo">
+                    </template>
+                    <template x-if="!photoUrl">
+                        <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </template>
+                </div>
+                <div>
+                    <input type="file" x-ref="photoInput" @change="uploadPhoto" accept="image/*" class="hidden">
+                    <button @click="$refs.photoInput.click()" :disabled="loading" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 text-sm font-medium disabled:opacity-50 transition-colors">
+                        <span x-show="!loading">Change Photo</span>
+                        <span x-show="loading" style="display: none;">Uploading...</span>
+                    </button>
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">JPG, GIF or PNG. Max size of 2MB.</p>
+                </div>
+            </div>
+            
+            <div x-show="message" x-transition class="mt-4 p-4 rounded-md text-sm" :class="status === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'" x-text="message" style="display: none;"></div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Email Settings Section -->
     <div class="bg-white dark:bg-slate-800 shadow rounded-lg mb-8 overflow-hidden" x-data="emailSettings()">
         <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700">
@@ -128,6 +159,49 @@
 </div>
 
 <script>
+function profilePhotoSettings() {
+    return {
+        loading: false,
+        message: '',
+        status: '',
+        photoUrl: '<?= (isset($profile) && !empty($profile['photo_url'])) ? esc($profile['photo_url']) : '' ?>',
+
+        async uploadPhoto(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            this.loading = true;
+            this.message = '';
+            
+            const formData = new FormData();
+            formData.append('photo', file);
+
+            try {
+                const res = await fetch('<?= base_url('api/settings/photo') ?>', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    this.status = 'success';
+                    this.message = data.message;
+                    this.photoUrl = data.photo_url;
+                } else {
+                    this.status = 'error';
+                    this.message = data.message || 'Failed to upload photo.';
+                }
+            } catch (err) {
+                this.status = 'error';
+                this.message = 'Network error.';
+            }
+            
+            this.loading = false;
+            this.$refs.photoInput.value = '';
+        }
+    }
+}
+
 function emailSettings() {
     return {
         step: 1,
