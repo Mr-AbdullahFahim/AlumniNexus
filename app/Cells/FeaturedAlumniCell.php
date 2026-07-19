@@ -4,7 +4,7 @@ namespace App\Cells;
 
 class FeaturedAlumniCell
 {
-    public function render($compact = false)
+    public function render($compact = false, $rounded = false)
     {
         $db = \Config\Database::connect();
         $settingsQuery = $db->table('settings')->where('setting_key', 'current_cycle_date')->get();
@@ -23,6 +23,6 @@ class FeaturedAlumniCell
             return '';
         }
         
-        return view('cells/featured_alumni', ['alumni' => $featured, 'compact' => $compact]);
+        return view('cells/featured_alumni', ['alumni' => $featured, 'compact' => $compact, 'rounded' => $rounded]);
     }
 }

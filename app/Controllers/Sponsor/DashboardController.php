@@ -45,7 +45,7 @@ class DashboardController extends BaseController
             'cycles' => $cycles,
             'current_cycle_date' => $currentCycleDate,
             'server_time' => date('c'),
-            'next_cycle_end_time' => $nextEndTime
+            'next_cycle_end_time' => $nextEndTime ? date('c', strtotime($nextEndTime)) : null
         ];
 
         return $this->respond($data);

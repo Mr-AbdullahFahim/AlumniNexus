@@ -18,7 +18,7 @@
     <!-- Top Summary Grid -->
     
     <!-- Countdown Timer -->
-    <div x-show="!isLoading" style="display: none;" class="bg-indigo-600 dark:bg-indigo-900 rounded-2xl p-6 text-white shadow-md mb-8 flex flex-col sm:flex-row items-center justify-between">
+    <div x-show="!isLoading && stats.next_cycle_end_time" style="display: none;" class="bg-indigo-600 dark:bg-indigo-900 rounded-2xl p-6 text-white shadow-md mb-8 flex flex-col sm:flex-row items-center justify-between">
         <div>
             <h3 class="text-xl font-bold">Next Cycle Begins In:</h3>
             <p class="text-indigo-200 text-sm mt-1">Bids settle daily at 6:00 PM</p>
@@ -375,7 +375,7 @@ function alumniDashboard() {
                     return;
                 }
                 
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 48); // Allow > 24 hours
+                const hours = Math.floor((diff / (1000 * 60 * 60))); // Allow > 24 hours
                 const mins = Math.floor((diff / 1000 / 60) % 60);
                 const secs = Math.floor((diff / 1000) % 60);
                 

@@ -27,7 +27,7 @@ class BlindBidModel extends Model
     /**
      * Determines the current bidding cycle date based on the 6 PM cutoff.
      */
-    public function getCurrentCycleDate(): string
+    public function getCurrentCycleDate(): ?string
     {
         $db = \Config\Database::connect();
         $query = $db->table('settings')->where('setting_key', 'current_cycle_date')->get();
@@ -37,9 +37,7 @@ class BlindBidModel extends Model
             return $row->setting_value;
         }
 
-        // Fallback
-        $hour = (int) date('H');
-        return ($hour >= 18) ? date('Y-m-d', strtotime('+1 day')) : date('Y-m-d');
+        return null;
     }
 
     /**

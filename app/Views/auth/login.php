@@ -91,7 +91,14 @@ function loginForm() {
                     this.message = 'Login successful! Redirecting...';
                     let redirectUrl = '<?= base_url('/') ?>';
                     
-                    if (data.user && data.user.role == 1) redirectUrl = '<?= base_url('admin/dashboard') ?>';
+                    if (data.user && data.user.role == 1) {
+                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+                        if (isMobile) {
+                            redirectUrl = '<?= base_url('directory') ?>';
+                        } else {
+                            redirectUrl = '<?= base_url('admin/dashboard') ?>';
+                        }
+                    }
                     if (data.user && data.user.role == 2) redirectUrl = '<?= base_url('alumni/dashboard') ?>';
                     if (data.user && data.user.role == 3) redirectUrl = '<?= base_url('student/favorites') ?>';
                     if (data.user && data.user.role == 4) redirectUrl = '<?= base_url('sponsor/dashboard') ?>';

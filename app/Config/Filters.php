@@ -36,6 +36,8 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'jwt'           => \App\Filters\JWTAuthFilter::class,
         'role'          => \App\Filters\RoleFilter::class,
+        'desktop_only'  => \App\Filters\DesktopOnlyFilter::class,
+        'throttle'      => \App\Filters\RateLimitFilter::class,
     ];
 
     /**
@@ -75,12 +77,12 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf',
+            'csrf',
             // 'invalidchars',
         ],
         'after' => [
             // 'honeypot',
-            // 'secureheaders',
+            'secureheaders',
         ],
     ];
 

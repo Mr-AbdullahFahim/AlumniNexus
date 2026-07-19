@@ -49,11 +49,18 @@ class SponsorController extends BaseController
 
         // Note: We now allow multiple sponsorships per alumni from the same sponsor.
 
+        $bidModel = new \App\Models\BlindBidModel();
+        $currentCycle = $bidModel->getCurrentCycleDate();
+        if (!$currentCycle) {
+            return $this->failForbidden('The bidding cycle has not been initialized yet. Please try again later.');
+        }
+
         $data = [
             'sponsor_id' => $viewerId,
             'alumni_id'  => $alumniId,
             'amount'     => $amount,
-            'status'     => 'active'
+            'status'     => 'active',
+            'cycle_date' => $currentCycle
         ];
 
         if ($sponsorshipModel->insert($data)) {
@@ -84,18 +91,10 @@ class SponsorController extends BaseController
                                          ->orderBy('sponsorships.created_at', 'DESC')
                                          ->findAll();
 
-        // Group by Bidding Cycle Date (Shifts at 18:00 / 6 PM)
+        // Group by Bidding Cycle Date
         $grouped = [];
         foreach ($sponsorships as $s) {
-            $timestamp = strtotime($s['created_at']);
-            $hour = (int)date('H', $timestamp);
-            
-            // If the time is 18:00 or later, it belongs to the next day's bidding cycle
-            if ($hour >= 18) {
-                $cycleDate = date('Y-m-d', strtotime('+1 day', $timestamp));
-            } else {
-                $cycleDate = date('Y-m-d', $timestamp);
-            }
+            $cycleDate = $s['cycle_date'];
 
             if (!isset($grouped[$cycleDate])) {
                 $grouped[$cycleDate] = [

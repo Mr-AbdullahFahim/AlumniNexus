@@ -12,7 +12,7 @@ class SponsorshipModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['sponsor_id', 'alumni_id', 'amount', 'status'];
+    protected $allowedFields    = ['sponsor_id', 'alumni_id', 'amount', 'status', 'cycle_date'];
 
     protected bool $allowEmptyInserts = false;
 
@@ -31,16 +31,13 @@ class SponsorshipModel extends Model
      * @param string $cycleDate (Y-m-d)
      * @return float
      */
-    public function getTotalForCycle(int $alumniId, string $cycleDate): float
+    public function getTotalForCycle(int $alumniId, ?string $cycleDate): float
     {
-        // A cycle date of '2026-06-30' means from '2026-06-29 18:00:00' to '2026-06-30 17:59:59'
-        $startTime = date('Y-m-d 18:00:00', strtotime($cycleDate . ' -1 day'));
-        $endTime = date('Y-m-d 17:59:59', strtotime($cycleDate));
-
+        if (!$cycleDate) return 0.0;
+        
         $result = $this->selectSum('amount')
                        ->where('alumni_id', $alumniId)
-                       ->where('created_at >=', $startTime)
-                       ->where('created_at <=', $endTime)
+                       ->where('cycle_date', $cycleDate)
                        ->first();
 
         return (float) ($result['amount'] ?? 0);
@@ -54,16 +51,14 @@ class SponsorshipModel extends Model
      * @param string $cycleDate (Y-m-d)
      * @return float
      */
-    public function getSponsorTotalForCycle(int $sponsorId, int $alumniId, string $cycleDate): float
+    public function getSponsorTotalForCycle(int $sponsorId, int $alumniId, ?string $cycleDate): float
     {
-        $startTime = date('Y-m-d 18:00:00', strtotime($cycleDate . ' -1 day'));
-        $endTime = date('Y-m-d 17:59:59', strtotime($cycleDate));
-
+        if (!$cycleDate) return 0.0;
+        
         $result = $this->selectSum('amount')
                        ->where('sponsor_id', $sponsorId)
                        ->where('alumni_id', $alumniId)
-                       ->where('created_at >=', $startTime)
-                       ->where('created_at <=', $endTime)
+                       ->where('cycle_date', $cycleDate)
                        ->first();
 
         return (float) ($result['amount'] ?? 0);
@@ -76,16 +71,14 @@ class SponsorshipModel extends Model
      * @param string $cycleDate (Y-m-d)
      * @return array
      */
-    public function getSponsorshipsForCycle(int $alumniId, string $cycleDate): array
+    public function getSponsorshipsForCycle(int $alumniId, ?string $cycleDate): array
     {
-        $startTime = date('Y-m-d 18:00:00', strtotime($cycleDate . ' -1 day'));
-        $endTime = date('Y-m-d 17:59:59', strtotime($cycleDate));
-
+        if (!$cycleDate) return [];
+        
         return $this->select('sponsorships.amount, users.name as sponsor_name')
                     ->join('users', 'users.id = sponsorships.sponsor_id')
                     ->where('sponsorships.alumni_id', $alumniId)
-                    ->where('sponsorships.created_at >=', $startTime)
-                    ->where('sponsorships.created_at <=', $endTime)
+                    ->where('sponsorships.cycle_date', $cycleDate)
                     ->findAll();
     }
 
@@ -97,9 +90,11 @@ class SponsorshipModel extends Model
      */
     public function getSponsorHistory(int $sponsorId): array
     {
-        $sponsorships = $this->select('sponsorships.*, users.name as alumni_name')
+        $sponsorships = $this->select('sponsorships.*, users.name as alumni_name, profiles.photo_url')
                              ->join('users', 'users.id = sponsorships.alumni_id')
+                             ->join('profiles', 'profiles.user_id = sponsorships.alumni_id', 'left')
                              ->where('sponsorships.sponsor_id', $sponsorId)
+                             ->orderBy('sponsorships.cycle_date', 'DESC')
                              ->orderBy('sponsorships.created_at', 'DESC')
                              ->findAll();
 
@@ -108,13 +103,7 @@ class SponsorshipModel extends Model
         $todayCycle = (new \App\Models\BlindBidModel())->getCurrentCycleDate();
 
         foreach ($sponsorships as $s) {
-            $createdAt = strtotime($s['created_at']);
-            $hour = (int) date('H', $createdAt);
-            if ($hour >= 18) {
-                $cycleDate = date('Y-m-d', strtotime('+1 day', $createdAt));
-            } else {
-                $cycleDate = date('Y-m-d', $createdAt);
-            }
+            $cycleDate = $s['cycle_date'];
             
             if (!isset($cycles[$cycleDate])) {
                 $cycles[$cycleDate] = [

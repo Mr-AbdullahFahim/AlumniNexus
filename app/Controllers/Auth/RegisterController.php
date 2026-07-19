@@ -13,7 +13,7 @@ class RegisterController extends ResourceController
         $rules = [
             'name'             => 'required|min_length[3]|max_length[100]',
             'email'            => 'required|valid_email',
-            'password'         => 'required|min_length[8]',
+            'password'         => 'required|min_length[8]|strong_password',
             'confirm_password' => 'required|matches[password]',
             'role_id'          => 'required|integer|in_list[2,3,4]', // Assuming 1 is Admin, others are Alumni, Student, Sponsor
         ];
@@ -41,7 +41,7 @@ class RegisterController extends ResourceController
         $userData = [
             'name'          => $this->request->getVar('name'),
             'email'         => $this->request->getVar('email'),
-            'password_hash' => password_hash($this->request->getVar('password'), PASSWORD_BCRYPT),
+            'password_hash' => password_hash($this->request->getVar('password'), PASSWORD_BCRYPT, ['cost' => 12]),
             'role_id'       => $this->request->getVar('role_id'),
             'status'        => 'approved', // Automatically approved
         ];
@@ -55,7 +55,7 @@ class RegisterController extends ResourceController
             'email'      => $userData['email'],
             'token'      => $otp,
             'user_data'  => json_encode($userData),
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+24 hours'))
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+15 minutes'))
         ]);
 
         if ($inserted) {

@@ -14,15 +14,15 @@ $routes->group('auth', ['namespace' => 'App\Controllers\Auth'], static function 
     $routes->get('verify-email', 'AuthController::verifyEmail');
 });
 
-// API Routes for Authentication
+// API Routes for Authentication (Rate limited: 5 req per 60 seconds for sensitive actions)
 $routes->group('api/auth', ['namespace' => 'App\Controllers\Auth'], static function ($routes) {
-    $routes->post('register', 'RegisterController::index');
-    $routes->post('login', 'LoginController::index');
+    $routes->post('register', 'RegisterController::index', ['filter' => 'throttle:5,60']);
+    $routes->post('login', 'LoginController::index', ['filter' => 'throttle:5,60']);
     $routes->post('logout', 'LoginController::logout', ['filter' => 'jwt']);
     $routes->post('refresh-token', 'LoginController::refreshToken');
-    $routes->post('forgot-password', 'PasswordController::forgot');
-    $routes->post('reset-password', 'PasswordController::reset');
-    $routes->post('verify-email', 'VerificationController::verify');
+    $routes->post('forgot-password', 'PasswordController::forgot', ['filter' => 'throttle:5,60']);
+    $routes->post('reset-password', 'PasswordController::reset', ['filter' => 'throttle:5,60']);
+    $routes->post('verify-email', 'VerificationController::verify', ['filter' => 'throttle:10,60']);
 });
 
 // Alumni Dashboard Routes (Requires JWT Auth in production, for now just standard routing)
@@ -137,15 +137,49 @@ $routes->group('api', ['filter' => 'jwt'], static function ($routes) {
 // Settings Web Route
 $routes->get('settings', 'SettingsController::index', ['filter' => 'jwt']);
 
+// Admin Routes
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => ['jwt', 'role:1', 'desktop_only']], static function ($routes) {
+    $routes->get('dashboard', 'DashboardController::index');
+    $routes->get('users', 'UserController::index');
+    $routes->get('activities', 'ActivityController::index');
+});
+
+$routes->group('api/admin', ['namespace' => 'App\Controllers\Admin', 'filter' => ['jwt', 'role:1', 'desktop_only']], static function ($routes) {
+    // Activities
+    $routes->get('activities/list', 'ActivityController::list');
+    // Analytics
+    $routes->get('analytics/top-certifications', 'AnalyticsController::topCertifications');
+    $routes->get('analytics/emerging-pathways', 'AnalyticsController::emergingPathways');
+    $routes->get('analytics/industry-distribution', 'AnalyticsController::industryDistribution');
+    $routes->get('analytics/certification-growth', 'AnalyticsController::certificationGrowth');
+    $routes->get('analytics/skills-curriculum', 'AnalyticsController::skillsCurriculum');
+    $routes->get('analytics/professional-courses', 'AnalyticsController::professionalCourses');
+    $routes->get('analytics/employment-status', 'AnalyticsController::employmentStatus');
+    $routes->get('analytics/user-roles', 'AnalyticsController::userRoles');
+
+    // Analytics Presets & Exports
+    $routes->get('analytics/presets', 'AnalyticsController::loadPresets');
+    $routes->post('analytics/presets', 'AnalyticsController::savePreset');
+    $routes->delete('analytics/presets/(:num)', 'AnalyticsController::deletePreset/$1');
+    $routes->get('analytics/export-csv', 'AnalyticsController::exportCsv');
+    $routes->post('analytics/export-pdf', 'AnalyticsController::exportPdf');
+
+    // Users
+    $routes->get('users/list', 'UserController::list');
+    $routes->post('users/status', 'UserController::updateStatus');
+    $routes->post('users/role', 'UserController::updateRole');
+});
+
 // Settings API Routes
 $routes->group('api/settings', ['filter' => 'jwt'], static function ($routes) {
-    $routes->post('email/initiate', 'SettingsController::initiateEmailChange');
-    $routes->post('email/verify-current', 'SettingsController::verifyCurrentEmail');
-    $routes->post('email/initiate-new', 'SettingsController::initiateNewEmail');
-    $routes->post('email/verify-new', 'SettingsController::verifyNewEmail');
+    $routes->post('email/initiate', 'SettingsController::initiateEmailChange', ['filter' => 'throttle:5,60']);
+    $routes->post('email/verify-current', 'SettingsController::verifyCurrentEmail', ['filter' => 'throttle:5,60']);
+    $routes->post('email/initiate-new', 'SettingsController::initiateNewEmail', ['filter' => 'throttle:5,60']);
+    $routes->post('email/verify-new', 'SettingsController::verifyNewEmail', ['filter' => 'throttle:5,60']);
     
-    $routes->post('password/initiate', 'SettingsController::initiatePasswordChange');
-    $routes->post('password/verify-otp', 'SettingsController::verifyPasswordOtp');
-    $routes->post('password', 'SettingsController::updatePassword');
+    $routes->post('password/initiate', 'SettingsController::initiatePasswordChange', ['filter' => 'throttle:5,60']);
+    $routes->post('password/verify-otp', 'SettingsController::verifyPasswordOtp', ['filter' => 'throttle:5,60']);
+    $routes->post('password', 'SettingsController::updatePassword', ['filter' => 'throttle:5,60']);
     $routes->delete('account', 'SettingsController::deleteAccount');
+    $routes->post('photo', 'SettingsController::updatePhoto');
 });

@@ -14,7 +14,10 @@ class SettingsController extends ResourceController
         $userModel = new UserModel();
         $user = $userModel->find($this->request->user->sub);
 
-        return view('settings/index', ['user' => $user]);
+        $profileModel = new \App\Models\ProfileModel();
+        $profile = $profileModel->where('user_id', $this->request->user->sub)->first();
+
+        return view('settings/index', ['user' => $user, 'profile' => $profile]);
     }
 
     private function generateOtpAndSendEmail($emailAddress, $subject, $viewName, $userName = 'User')
@@ -28,7 +31,7 @@ class SettingsController extends ResourceController
         $verifModel->insert([
             'email'      => $emailAddress,
             'token'      => $otp,
-            'expires_at' => date('Y-m-d H:i:s', strtotime('+1 hour'))
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+15 minutes'))
         ]);
 
         $emailService = \Config\Services::email();
@@ -73,8 +76,6 @@ class SettingsController extends ResourceController
         // OTP is valid. Delete it.
         $verifModel->delete($record['id']);
 
-        // In a real app, we might set a signed cookie or short-lived token to authorize the next step.
-        // For simplicity, we just return success.
         return $this->respond(['status' => 'success', 'message' => 'Current email verified.']);
     }
 
@@ -159,7 +160,7 @@ class SettingsController extends ResourceController
     public function updatePassword()
     {
         $rules = [
-            'new_password'     => 'required|min_length[8]',
+            'new_password'     => 'required|min_length[8]|strong_password',
             'confirm_password' => 'required|matches[new_password]',
             'otp'              => 'required|exact_length[6]|numeric'
         ];
@@ -176,7 +177,7 @@ class SettingsController extends ResourceController
         }
 
         $userModel->update($user['id'], [
-            'password_hash' => password_hash($this->request->getVar('new_password'), PASSWORD_BCRYPT)
+            'password_hash' => password_hash($this->request->getVar('new_password'), PASSWORD_BCRYPT, ['cost' => 12])
         ]);
 
         $verifModel->delete($record['id']);
@@ -200,5 +201,35 @@ class SettingsController extends ResourceController
         $userModel->delete($user['id']);
 
         return $this->respondDeleted(['status' => 'success', 'message' => 'Account deleted permanently.']);
+    }
+
+    public function updatePhoto()
+    {
+        $userId = $this->request->user->sub;
+        $file = $this->request->getFile('photo');
+        
+        if (!$file || !$file->isValid()) {
+            return $this->failValidationErrors('Invalid or missing file.');
+        }
+
+        $newName = $file->getRandomName();
+        $file->move(FCPATH . 'uploads/profiles', $newName);
+        
+        $photoUrl = base_url('uploads/profiles/' . $newName);
+        
+        $profileModel = new \App\Models\ProfileModel();
+        $profile = $profileModel->where('user_id', $userId)->first();
+        
+        if ($profile) {
+            // Optionally delete the old file from server here
+            $profileModel->update($profile['id'], ['photo_url' => $photoUrl]);
+        } else {
+            $profileModel->insert([
+                'user_id' => $userId,
+                'photo_url' => $photoUrl
+            ]);
+        }
+        
+        return $this->respond(['status' => 'success', 'message' => 'Photo updated successfully.', 'photo_url' => $photoUrl]);
     }
 }

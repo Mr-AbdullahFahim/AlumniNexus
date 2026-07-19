@@ -4,7 +4,9 @@ $userRole = service('request')->user->role ?? null;
 $backLink = base_url('alumni/dashboard');
 $backText = 'Back to Dashboard';
 
-if ($userRole == 4) {
+if ($userRole == 1) {
+    $backLink = base_url('admin/dashboard');
+} elseif ($userRole == 4) {
     $backLink = base_url('sponsor/dashboard');
 } elseif ($userRole == 3) {
     $backLink = base_url('student/favorites');

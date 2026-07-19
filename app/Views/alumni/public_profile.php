@@ -335,6 +335,16 @@
                     </div>
                 </div>
                 <div class="px-4 py-5 sm:p-6 text-slate-700 dark:text-slate-300">
+                    <?php if (empty($currentCycle)): ?>
+                        <div class="p-8 text-center bg-slate-50 dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                            <svg class="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Active Bidding Cycle</h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">There is currently no ongoing bidding cycle to sponsor. Please check back later when the next cycle begins.</p>
+                            <button @click="isSponsorModalOpen = false" class="mt-6 px-4 py-2 bg-white dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors text-sm font-semibold">Close Window</button>
+                        </div>
+                    <?php else: ?>
                     <div class="mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl border border-primary-100 dark:border-primary-800/30">
                         <div class="flex justify-between items-center mb-2">
                             <h4 class="text-sm font-bold text-primary-800 dark:text-primary-300">Sponsorship Rules</h4>
@@ -387,6 +397,7 @@
                             </button>
                         </div>
                     </form>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
