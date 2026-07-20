@@ -33,13 +33,18 @@ Ensure you have the following installed:
 *   MySQL Server (e.g., XAMPP, WAMP, or standalone)
 
 ### 2. Installation
-Clone the repository and install the PHP dependencies:
+**Must Do's when cloning:**
+1. Clone the repository: `git clone <repository_url>`
+2. Navigate into the directory: `cd AlumniNexus`
+3. Install the PHP dependencies:
 ```bash
 composer install
 ```
 
 ### 3. Environment Configuration
-Open the `.env` file at the root of the project (if it doesn't exist, create it by copying `env` to `.env`). 
+**Must Do's for Environment Setup:**
+1. Copy the `.env.example` file to create your `.env` file (e.g., `cp .env.example .env`).
+2. Open the `.env` file at the root of the project and ensure you configure your specific database credentials, SMTP email settings, and JWT secret.
 Configure the following environment variables:
 
 ```ini
@@ -60,12 +65,23 @@ JWT_TTL = 900
 ```
 
 ### 4. Database Migrations & Seeding
-Run the migrations to create the database tables, and run the seeders to populate the database with dummy data and test users:
+Run the migrations to create the database tables, and run the seeders to populate the database with dummy data and test users.
+
+**Must Do's for Seeding Data & Initialization:**
+*   You **must** run `RoleSeeder` first before any other seeders, as user accounts depend on these roles existing.
+*   After `RoleSeeder`, you can safely run `UserSeeder` and other seeders.
+*   **Crucial Setup Step**: After running migrations and seeders, you *must* run the settlement script once to initialize the very first bidding cycle. Without this, the bidding system won't start.
+
 ```bash
 php spark migrate
+php spark db:seed RoleSeeder
 php spark db:seed UserSeeder
 php spark db:seed DummyAlumniSeeder
 php spark db:seed BiddingTestSeeder
+php spark db:seed WinningStatsSeeder
+
+# Initialize the first bidding cycle
+php spark bids:settle
 ```
 
 ### 5. Start the Development Server
@@ -145,6 +161,14 @@ crontab -e
 ## 🧪 Manual Testing in Development
 
 During development, you don't need to wait until 6:00 PM to test the core loop of the platform. You can simulate the entire process manually.
+
+### 🔑 Test Accounts
+If you have run the database seeders (specifically `UserSeeder`), the following test accounts are available to help you test different roles. The password for all these accounts is `#String123`.
+
+*   **System Admin**: `admin@alumninexus.com`
+*   **Alumni**: `alumni@example.com`
+*   **Student**: `student@example.com`
+*   **Corporate Sponsor**: `sponsor@example.com`
 
 ### Step-by-Step Testing Loop:
 
