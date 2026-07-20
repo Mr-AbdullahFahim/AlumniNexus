@@ -51,14 +51,32 @@ Configure the following environment variables:
 # Environment
 CI_ENVIRONMENT = development
 
-# Database Configuration
+#--------------------------------------------------------------------
+# DATABASE
+#--------------------------------------------------------------------
 database.default.hostname = localhost
 database.default.database = your_database_name
-database.default.username = your_database_user
+database.default.username = your_database_username
 database.default.password = your_database_password
 database.default.DBDriver = MySQLi
+database.default.port = 3306
 
+#--------------------------------------------------------------------
+# EMAIL SETUP (Google App Password)
+#--------------------------------------------------------------------
+email.protocol = smtp
+email.SMTPHost = smtp.gmail.com
+email.SMTPUser = your_email@gmail.com
+email.SMTPPass = your_app_password
+email.SMTPPort = 465
+email.SMTPCrypto = ssl
+email.mailType = html
+email.fromEmail = your_email@gmail.com
+email.fromName = AlumniNexus
+
+#--------------------------------------------------------------------
 # JWT Configuration
+#--------------------------------------------------------------------
 JWT_SECRET_KEY = generate_a_very_long_random_string_here
 JWT_ALG = HS256
 JWT_TTL = 900
@@ -119,7 +137,29 @@ The web server's document root MUST point to the `public/` directory inside the 
 </VirtualHost>
 ```
 
-### 3. Folder Permissions
+### 3. Project Build & Dependencies
+When deploying to production, install PHP dependencies without development tools and optimize the autoloader for better performance:
+```bash
+composer install --no-dev --optimize-autoloader
+```
+*(Note: Frontend styling currently utilizes Tailwind CDN, so no Node/NPM build step is required).*
+
+### 4. Database Migrations & Initial Seeding
+Run migrations to set up the production database tables:
+```bash
+php spark migrate
+```
+**Must Do's for Deployment Seeding:** 
+You **must** run the `RoleSeeder` to initialize required roles in the system. **Do NOT run any other seeders** (like `UserSeeder` or `DummyAlumniSeeder`), as you don't want test or dummy accounts on your live production server.
+
+```bash
+php spark db:seed RoleSeeder
+
+# Initialize the first bidding cycle
+php spark bids:settle
+```
+
+### 5. Folder Permissions
 Ensure the web server (e.g., `www-data` or `apache`) has write access to the `writable/` directory. This is used for caching, logs, and sessions:
 ```bash
 chmod -R 777 writable/
